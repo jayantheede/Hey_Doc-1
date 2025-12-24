@@ -1,0 +1,15 @@
+<!-- Leave Balance Widget - Insert after line 2268 in app.py -->
+
+    <!-- Leave Balance Widget -->
+    <div class="mx-4 mb-4 bg-gradient-to-br from-teal-50 to-emerald-50 p-4 rounded-2xl border border-teal-100">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-black uppercase tracking-wider text-teal-700">Leave Balance</span>
+        <i class="ri-calendar-check-line text-teal-600"></i>
+      </div>
+      <div class="flex items-baseline space-x-1 mb-1">
+        <span class="text-3xl font-black text-teal-600">{{ doctor_data.get('leaves_remaining', 20) if doctor_data else 20 }}</span>
+        <span class="text-sm text-slate-500">/</span>
+        <span class="text-sm font-bold text-slate-500">{{ doctor_data.get('leave_quota', 20) if doctor_data else 20 }}</span>
+      </div>
+      <p class="text-[10px] text-slate-500 font-medium">{{ doctor_data.get('leaves_taken', 0) if doctor_data else 0 }} days taken this year</p>
+    </div>
