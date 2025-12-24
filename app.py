@@ -102,40 +102,47 @@ def init_db():
                         'phone': {'bsonType': 'string'},
                         'city': {'bsonType': 'string'},
                         'address': {'bsonType': 'string'},
-                            'condition': {'bsonType': 'string'},
-                            'diagnosed_date': {'bsonType': 'date'},
-                            'status': {'bsonType': 'string'}
-                        }
+                        'date_of_birth': {'bsonType': 'date'},
+                        'blood_group': {'bsonType': 'string'},
+                        'medical_history': {
+                            'bsonType': 'array',
+                            'items': {
+                                'bsonType': 'object',
+                                'properties': {
+                                    'condition': {'bsonType': 'string'},
+                                    'diagnosed_date': {'bsonType': 'date'},
+                                    'status': {'bsonType': 'string'}
+                                }
+                            }
+                        },
+                        'created_at': {'bsonType': 'date', 'default': datetime.utcnow()},
+                        'updated_at': {'bsonType': 'date', 'default': datetime.utcnow()}
                     }
-                },
-                'created_at': {'bsonType': 'date', 'default': datetime.utcnow()},
-                'updated_at': {'bsonType': 'date', 'default': datetime.utcnow()}
-            }
-        }
-    })
+                }
+            })
 
-# Appointments Collection
-if 'appointments' not in db.list_collection_names():
-    db.create_collection('appointments', validator={
-        '$jsonSchema': {
-            'bsonType': 'object',
-            'required': ['doctor_id', 'patient_id', 'appointment_date', 'time_slot', 'status'],
-            'properties': {
-                'doctor_id': {'bsonType': 'objectId'},
-                'patient_id': {'bsonType': 'objectId'},
-                'appointment_date': {'bsonType': 'date'},
-                'time_slot': {'bsonType': 'string'},
-                'status': {
-                    'enum': ['pending', 'confirmed', 'completed', 'cancelled'],
-                    'default': 'pending'
-                },
-                'reason': {'bsonType': 'string'},
-                'notes': {'bsonType': 'string'},
-                'created_at': {'bsonType': 'date', 'default': datetime.utcnow()},
-                'updated_at': {'bsonType': 'date', 'default': datetime.utcnow()}
-            }
-        }
-    })
+        # Appointments Collection
+        if 'appointments' not in existing_collections:
+            db.create_collection('appointments', validator={
+                '$jsonSchema': {
+                    'bsonType': 'object',
+                    'required': ['doctor_id', 'patient_id', 'appointment_date', 'time_slot', 'status'],
+                    'properties': {
+                        'doctor_id': {'bsonType': 'objectId'},
+                        'patient_id': {'bsonType': 'objectId'},
+                        'appointment_date': {'bsonType': 'date'},
+                        'time_slot': {'bsonType': 'string'},
+                        'status': {
+                            'enum': ['pending', 'confirmed', 'completed', 'cancelled'],
+                            'default': 'pending'
+                        },
+                        'reason': {'bsonType': 'string'},
+                        'notes': {'bsonType': 'string'},
+                        'created_at': {'bsonType': 'date', 'default': datetime.utcnow()},
+                        'updated_at': {'bsonType': 'date', 'default': datetime.utcnow()}
+                    }
+                }
+            })
     except Exception as e:
         print(f"Warning: Database initialization failed: {e}")
 
@@ -161,15 +168,14 @@ circulars_collection = db['circulars']
 receptionists_collection = db['receptionists']
 certificates_collection = db['certificates']
 inventory_collection = db['inventory']
-holidays_collection = db['holidays'] # For holiday records
+holidays_collection = db['holidays']
 blocked_slots_collection = db["blocked_slots"]
 loc_aval_collection = db["LocAval"]
 password_reset_collection = db["password_reset"]
 payments_collection = db["payments"]
-leaves_collection = db["leaves"]  # Keep this for backward compatibility
+leaves_collection = db["leaves"]
 prescriptions_collection = db["prescriptions"]
-login_otp_collection = db["login_otp"] # New collection for 2FA OTPs
-holidays_collection = db["holidays"] # New collection for holidays
+login_otp_collection = db["login_otp"]
 
 # --- Configuration for Uploads ---
 UPLOAD_FOLDER = 'uploads'
