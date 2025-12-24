@@ -34,70 +34,65 @@ client = MongoClient("mongodb+srv://varma:varma1225@varma.f5zdh.mongodb.net/?ret
 db = client["hospital_bot"]
 
 # --- Collections ---
-# Doctors Collection
-doctors_collection = db['doctor']
-if 'doctor' not in db.list_collection_names():
-    db.create_collection('doctor', validator={
-        '$jsonSchema': {
-            'bsonType': 'object',
-            'required': ['username', 'password', 'email', 'name', 'specialization', 'status'],
-            'properties': {
-                'username': {'bsonType': 'string'},
-                'password': {'bsonType': 'string'},
-                'email': {'bsonType': 'string'},
-                'name': {'bsonType': 'string'},
-                'specialization': {'bsonType': 'string'},
-                'city': {'bsonType': 'string'},
-                'clinic_name': {'bsonType': 'string'},
-                'years_of_experience': {'bsonType': 'int', 'minimum': 0},
-                'contact_info': {
+def init_db():
+    try:
+        existing_collections = db.list_collection_names()
+        # Doctors Collection
+        if 'doctor' not in existing_collections:
+            db.create_collection('doctor', validator={
+                '$jsonSchema': {
                     'bsonType': 'object',
+                    'required': ['username', 'password', 'email', 'name', 'specialization', 'status'],
                     'properties': {
-                        'phone': {'bsonType': 'string'},
-                        'address': {'bsonType': 'string'},
-                        'emergency_contact': {'bsonType': 'string'}
-                    }
-                },
-                'status': {'enum': ['active', 'inactive']},
-                'leaves': {
-                    'bsonType': 'array',
-                    'items': {
-                        'bsonType': 'object',
-                        'properties': {
-                            'start_date': {'bsonType': 'date'},
-                            'end_date': {'bsonType': 'date'},
-                            'reason': {'bsonType': 'string'},
-                            'status': {'enum': ['pending', 'approved', 'rejected'], 'default': 'pending'},
-                            'applied_at': {'bsonType': 'date', 'default': datetime.utcnow()}
+                        'username': {'bsonType': 'string'},
+                        'password': {'bsonType': 'string'},
+                        'email': {'bsonType': 'string'},
+                        'name': {'bsonType': 'string'},
+                        'specialization': {'bsonType': 'string'},
+                        'city': {'bsonType': 'string'},
+                        'clinic_name': {'bsonType': 'string'},
+                        'years_of_experience': {'bsonType': 'int', 'minimum': 0},
+                        'contact_info': {
+                            'bsonType': 'object',
+                            'properties': {
+                                'phone': {'bsonType': 'string'},
+                                'address': {'bsonType': 'string'},
+                                'emergency_contact': {'bsonType': 'string'}
+                            }
                         },
-                        'required': ['start_date', 'end_date', 'reason']
+                        'status': {'enum': ['active', 'inactive']},
+                        'leaves': {
+                            'bsonType': 'array',
+                            'items': {
+                                'bsonType': 'object',
+                                'properties': {
+                                    'start_date': {'bsonType': 'date'},
+                                    'end_date': {'bsonType': 'date'},
+                                    'reason': {'bsonType': 'string'},
+                                    'status': {'enum': ['pending', 'approved', 'rejected'], 'default': 'pending'},
+                                    'applied_at': {'bsonType': 'date', 'default': datetime.utcnow()}
+                                },
+                                'required': ['start_date', 'end_date', 'reason']
+                            }
+                        },
+                        'created_at': {'bsonType': 'date', 'default': datetime.utcnow()},
+                        'updated_at': {'bsonType': 'date', 'default': datetime.utcnow()}
                     }
-                },
-                'created_at': {'bsonType': 'date', 'default': datetime.utcnow()},
-                'updated_at': {'bsonType': 'date', 'default': datetime.utcnow()}
-            }
-        }
-    })
+                }
+            })
 
-# Patients Collection
-if 'patients' not in db.list_collection_names():
-    db.create_collection('patients', validator={
-        '$jsonSchema': {
-            'bsonType': 'object',
-            'required': ['name', 'email', 'phone', 'city'],
-            'properties': {
-                'name': {'bsonType': 'string'},
-                'email': {'bsonType': 'string'},
-                'phone': {'bsonType': 'string'},
-                'city': {'bsonType': 'string'},
-                'address': {'bsonType': 'string'},
-                'date_of_birth': {'bsonType': 'date'},
-                'blood_group': {'bsonType': 'string'},
-                'medical_history': {
-                    'bsonType': 'array',
-                    'items': {
-                        'bsonType': 'object',
-                        'properties': {
+        # Patients Collection
+        if 'patients' not in existing_collections:
+            db.create_collection('patients', validator={
+                '$jsonSchema': {
+                    'bsonType': 'object',
+                    'required': ['name', 'email', 'phone', 'city'],
+                    'properties': {
+                        'name': {'bsonType': 'string'},
+                        'email': {'bsonType': 'string'},
+                        'phone': {'bsonType': 'string'},
+                        'city': {'bsonType': 'string'},
+                        'address': {'bsonType': 'string'},
                             'condition': {'bsonType': 'string'},
                             'diagnosed_date': {'bsonType': 'date'},
                             'status': {'bsonType': 'string'}
@@ -132,20 +127,26 @@ if 'appointments' not in db.list_collection_names():
             }
         }
     })
+    except Exception as e:
+        print(f"Warning: Database initialization failed: {e}")
 
-# Other existing collections
+init_db()
+doctors_collection = db['doctor']
+patients_collection = db['patients']
+appointments_collection = db['appointments']
+admin_collection = db['admin']
+branches_collection = db['branches']
+circulars_collection = db['circulars']
+receptionists_collection = db['receptionists']
+certificates_collection = db['certificates']
+inventory_collection = db['inventory']
+holidays_collection = db['holidays'] # For holiday records
 blocked_slots_collection = db["blocked_slots"]
 loc_aval_collection = db["LocAval"]
-branches_collection = db["branch"]
-admin_collection = db["admin"]
-receptionists_collection = db["receptionists"]
 password_reset_collection = db["password_reset"]
 payments_collection = db["payments"]
 leaves_collection = db["leaves"]  # Keep this for backward compatibility
-appointments_collection = db["appointments"]
-patients_collection = db["patients"]
 prescriptions_collection = db["prescriptions"]
-circulars_collection = db["circulars"] # New collection for circulars
 login_otp_collection = db["login_otp"] # New collection for 2FA OTPs
 holidays_collection = db["holidays"] # New collection for holidays
 
@@ -1242,7 +1243,7 @@ home_template = """
 """
 
 # Reusable Appointment Form Template (for both Add and Edit)
-appointment_form_template = """
+appointment_form_template = r"""
 <!DOCTYPE html>
 <html lang="en" class="bg-gray-100">
 <head>
