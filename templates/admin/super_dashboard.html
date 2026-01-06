@@ -1,0 +1,278 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Dashboard - {{ site_settings.site_name }}{% endblock %}
+
+{% block header_title %}Dashboard{% endblock %}
+{% block header_subtitle %}Overview & Control{% endblock %}
+
+{% block content %}
+{% if request.args.get('view') == 'home' %}
+<!-- Hero Greeting Section -->
+<div class="mb-10 bg-brand-600 rounded-[40px] p-12 text-white shadow-2xl relative overflow-hidden group">
+    <div
+        class="absolute -right-20 -top-20 w-80 h-80 bg-white/10 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-700">
+    </div>
+    <div
+        class="absolute -left-20 -bottom-20 w-60 h-60 bg-brand-900/20 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700">
+    </div>
+
+    <div class="relative z-10">
+        <div
+            class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 rounded-full text-[10px] font-black uppercase tracking-[2px] mb-6 backdrop-blur-md">
+            <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+            System Online
+        </div>
+        <h1 class="text-5xl font-black tracking-tight leading-tight mb-4">
+            Hai Global Administrator <br>
+            <span class="text-brand-200">of Hey Doc!</span>
+        </h1>
+        <p class="text-white/70 text-lg font-medium max-w-xl leading-relaxed">
+            Welcome back to your command center. Everything is running smoothly across all branches and modules today.
+        </p>
+    </div>
+
+    <div
+        class="absolute right-12 bottom-0 top-0 flex items-center opacity-10 group-hover:opacity-20 transition-opacity">
+        <i class="ri-shield-user-line text-[200px]"></i>
+    </div>
+</div>
+{% endif %}
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+    <!-- Branches -->
+    <div class="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm relative overflow-hidden group">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Total Branches</p>
+                <h3 class="text-4xl font-black text-slate-800">{{ stats.branches }}</h3>
+            </div>
+            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
+                <i class="ri-building-line text-2xl"></i>
+            </div>
+        </div>
+        <a href="/admin/branches"
+            class="text-xs font-bold text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-1">
+            Add New <i class="ri-arrow-right-s-line"></i>
+        </a>
+        <div
+            class="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-50 rounded-full opacity-50 scale-0 group-hover:scale-100 transition-transform duration-500">
+        </div>
+    </div>
+
+    <!-- Doctors -->
+    <div class="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm relative overflow-hidden group">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Medical Doctors</p>
+                <h3 class="text-4xl font-black text-slate-800">{{ doctor_count or stats.staff }}</h3>
+            </div>
+            <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center">
+                <i class="ri-nurse-line text-2xl"></i>
+            </div>
+        </div>
+        <a href="/admin/staff"
+            class="text-xs font-bold text-indigo-600 hover:text-indigo-700 transition-colors flex items-center gap-1">
+            Add New <i class="ri-arrow-right-s-line"></i>
+        </a>
+    </div>
+
+    <!-- Receptionists -->
+    <div class="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm relative overflow-hidden group">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Receptionists</p>
+                <h3 class="text-4xl font-black text-slate-800">{{ receptionist_count or 0 }}</h3>
+            </div>
+            <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center">
+                <i class="ri-customer-service-2-line text-2xl"></i>
+            </div>
+        </div>
+        <a href="/admin/staff"
+            class="text-xs font-bold text-purple-600 hover:text-purple-700 transition-colors flex items-center gap-1">
+            Add New <i class="ri-arrow-right-s-line"></i>
+        </a>
+    </div>
+
+    <!-- Leaves -->
+    <div class="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm relative overflow-hidden group">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Pending Leaves</p>
+                <h3 class="text-4xl font-black text-slate-800">{{ pending_leaves_count or 0 }}</h3>
+            </div>
+            <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center">
+                <i class="ri-calendar-todo-line text-2xl"></i>
+            </div>
+        </div>
+        <a href="/admin/manage_leaves"
+            class="text-xs font-bold text-orange-600 hover:text-orange-700 transition-colors flex items-center gap-1">
+            View All <i class="ri-arrow-right-s-line"></i>
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-10">
+    <!-- Circulars -->
+    <div class="bg-white rounded-[40px] border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+        <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center">
+                    <i class="ri-notification-3-line"></i>
+                </div>
+                <h2 class="text-lg font-bold text-slate-800">Recent Circulars</h2>
+            </div>
+            <button onclick="document.getElementById('circularModal').classList.remove('hidden')"
+                class="bg-emerald-600 text-white px-5 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-all">
+                Send Circular
+            </button>
+        </div>
+        <div class="flex-1 overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-slate-50/50 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                    <tr>
+                        <th class="px-8 py-4">Title</th>
+                        <th class="px-8 py-4">Branch</th>
+                        <th class="px-8 py-4">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    {% if recent_circulars %}
+                    {% for c in recent_circulars %}
+                    <tr class="hover:bg-slate-50/30 transition-colors group">
+                        <td class="px-8 py-5 font-bold text-slate-700">{{ c.title }}</td>
+                        <td class="px-8 py-5 text-sm text-slate-500">{{ c.branch_name or 'All Branches' }}</td>
+                        <td class="px-8 py-5 text-sm font-medium text-slate-400">{{ c.created_at.strftime('%d %b,
+                            %H:%M') if c.created_at else 'N/A' }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="px-8 py-20 text-center text-slate-400 font-medium italic">No recent
+                            circulars found.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Leaves -->
+    <div class="bg-white rounded-[40px] border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+        <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center">
+                    <i class="ri-calendar-check-line"></i>
+                </div>
+                <h2 class="text-lg font-bold text-slate-800">Pending Leave Requests</h2>
+            </div>
+        </div>
+        <div class="flex-1 flex flex-col items-center justify-center p-12 text-center text-slate-400">
+            {% if pending_leaves %}
+            <table class="w-full text-left">
+                <thead class="bg-slate-50/50 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                    <tr>
+                        <th class="px-8 py-4">Staff</th>
+                        <th class="px-8 py-4">Period</th>
+                        <th class="px-8 py-4 text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    {% for l in pending_leaves %}
+                    <tr class="hover:bg-slate-50/30 transition-colors">
+                        <td class="px-8 py-5 font-bold text-slate-700">{{ l.staff_name }}</td>
+                        <td class="px-8 py-5 text-xs text-slate-500">{{ l.start_date.strftime('%d %b') }} - {{
+                            l.end_date.strftime('%d %b') }}</td>
+                        <td class="px-8 py-5 text-right">
+                            <a href="/admin/manage_leaves"
+                                class="text-brand-600 font-bold text-[10px] uppercase tracking-widest hover:underline">Review</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <i class="ri-emotion-happy-line text-5xl mb-4 opacity-20"></i>
+            <p class="font-bold">All clear!</p>
+            <p class="text-sm">No pending leave requests at the moment.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Quick Link Grid (Legacy Applications) -->
+<h2 class="text-xl font-black text-slate-800 tracking-tight mb-6">Management Modules</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+    <a href="/admin/branches"
+        class="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-brand-500/5 hover:-translate-y-1 transition-all group">
+        <div
+            class="w-14 h-14 bg-brand-50 rounded-2xl flex items-center justify-center text-brand-600 mb-6 group-hover:scale-110 transition-transform">
+            <i class="ri-building-line text-3xl"></i>
+        </div>
+        <h4 class="text-lg font-black text-slate-800 mb-2">Branch Management</h4>
+        <p class="text-sm text-slate-400 leading-relaxed">Control clinic locations and administrator assignments.</p>
+    </a>
+
+    <a href="/admin/staff"
+        class="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-brand-500/5 hover:-translate-y-1 transition-all group">
+        <div
+            class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mb-6 group-hover:scale-110 transition-transform">
+            <i class="ri-group-line text-3xl"></i>
+        </div>
+        <h4 class="text-lg font-black text-slate-800 mb-2">Staff Directory</h4>
+        <p class="text-sm text-slate-400 leading-relaxed">Centralized database for all healthcare professionals.</p>
+    </a>
+
+    <a href="/admin/cms"
+        class="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-brand-500/5 hover:-translate-y-1 transition-all group">
+        <div
+            class="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-600 mb-6 group-hover:scale-110 transition-transform">
+            <i class="ri-layout-masonry-line text-3xl"></i>
+        </div>
+        <h4 class="text-lg font-black text-slate-800 mb-2">CMS & Theming</h4>
+        <p class="text-sm text-slate-400 leading-relaxed">Customize visual identity and dynamic content.</p>
+    </a>
+</div>
+
+<!-- Modal for Circular -->
+<div id="circularModal" class="hidden fixed inset-0 z-[100]">
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="this.parentElement.classList.add('hidden')">
+    </div>
+    <div
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xl bg-white rounded-[40px] shadow-2xl p-10">
+        <h3 class="text-2xl font-black text-slate-900 mb-8">Send New Circular</h3>
+        <form action="/admin/send_circular" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <div class="space-y-1">
+                <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Target
+                    Branch</label>
+                <select name="branch_id"
+                    class="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 font-bold text-slate-800 outline-none focus:border-brand-500 transition-all">
+                    <option value="all">All Branches</option>
+                    {% for branch in all_branches %}
+                    <option value="{{ branch._id }}">{{ branch.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Circular
+                    Title</label>
+                <input type="text" name="title" required
+                    class="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 font-bold text-slate-800 outline-none focus:border-brand-500 transition-all">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Content
+                    Message</label>
+                <textarea name="content" rows="4" required
+                    class="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 font-bold text-slate-800 outline-none focus:border-brand-500 transition-all"></textarea>
+            </div>
+            <div class="pt-4 flex gap-4">
+                <button type="button" onclick="document.getElementById('circularModal').classList.add('hidden')"
+                    class="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black uppercase tracking-widest text-xs">Cancel</button>
+                <button type="submit"
+                    class="flex-1 py-4 bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-emerald-900/10 hover:bg-emerald-700 transition-all">Send
+                    Now</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

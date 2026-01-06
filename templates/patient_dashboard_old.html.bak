@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard - Hey Doc!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+        }
+
+        .nav-active {
+            background: #f0fdf4;
+            color: #059669;
+            font-weight: 700;
+            border-right: 3px solid #059669;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 min-h-screen flex selection:bg-emerald-100 selection:text-emerald-700"
+    x-data="{ currentSection: 'overview' }">
+
+    <!-- Sidebar Navigation -->
+    <aside class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-100 z-50 hidden lg:flex flex-col">
+        <div class="p-8 pb-4">
+            <div class="flex items-center gap-3 mb-8">
+                <div
+                    class="w-10 h-10 bg-gradient-to-tr from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-200">
+                    <i class="ri-heart-pulse-fill text-xl"></i>
+                </div>
+                <h1 class="font-black text-xl tracking-tight text-slate-900">Hey Doc!</h1>
+            </div>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-1 overflow-y-auto hide-scrollbar">
+            <p class="px-4 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Menu</p>
+
+            <a href="#" @click.prevent="currentSection = 'overview'"
+                :class="currentSection === 'overview' ? 'nav-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+                <i class="ri-dashboard-line text-lg"></i>
+                <span class="font-medium text-sm">Dashboard</span>
+            </a>
+            <a href="#" @click.prevent="currentSection = 'appointments'"
+                :class="currentSection === 'appointments' ? 'nav-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+                <i class="ri-calendar-event-line text-lg"></i>
+                <span class="font-medium text-sm">Appointments</span>
+            </a>
+            <a href="#" @click.prevent="currentSection = 'video_consult'"
+                :class="currentSection === 'video_consult' ? 'nav-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all relative">
+                <i class="ri-video-chat-line text-lg"></i>
+                <span class="font-medium text-sm">Video Consult</span>
+                <span class="absolute right-4 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+            </a>
+            <a href="#" @click.prevent="currentSection = 'medical_records'"
+                :class="currentSection === 'medical_records' ? 'nav-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+                <i class="ri-file-list-3-line text-lg"></i>
+                <span class="font-medium text-sm">Medical Records</span>
+            </a>
+            <a href="#" @click.prevent="currentSection = 'prescriptions'"
+                :class="currentSection === 'prescriptions' ? 'nav-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+                <i class="ri-capsule-line text-lg"></i>
+                <span class="font-medium text-sm">Prescriptions</span>
+            </a>
+            <a href="#" @click.prevent="currentSection = 'payments'"
+                :class="currentSection === 'payments' ? 'nav-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+                <i class="ri-bank-card-line text-lg"></i>
+                <span class="font-medium text-sm">Payments</span>
+            </a>
+            <a href="#" @click.prevent="currentSection = 'pharmacy'"
+                :class="currentSection === 'pharmacy' ? 'nav-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+                <i class="ri-store-2-line text-lg"></i>
+                <span class="font-medium text-sm">Pharmacy</span>
+            </a>
+
+            <p class="px-4 text-[10px] font-black uppercase tracking-widest text-slate-400 mt-8 mb-2">Settings</p>
+            <a href="#" @click.prevent="currentSection = 'notifications'"
+                :class="currentSection === 'notifications' ? 'nav-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+                <i class="ri-notification-3-line text-lg"></i>
+                <span class="font-medium text-sm">Notifications</span>
+            </a>
+            <a href="#" @click.prevent="currentSection = 'profile'"
+                :class="currentSection === 'profile' ? 'nav-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+                <i class="ri-user-settings-line text-lg"></i>
+                <span class="font-medium text-sm">Profile</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-100">
+            <a href="/logout"
+                class="flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 rounded-xl transition-all font-bold text-sm">
+                <i class="ri-logout-box-line text-lg"></i>
+                <span>Sign Out</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="lg:ml-64 flex-1 pb-20">
+        <!-- Top Bar -->
+        <header
+            class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100/50 px-6 py-4 flex justify-between items-center">
+            <div class="lg:hidden flex items-center gap-3">
+                <button onclick="document.querySelector('aside').classList.toggle('hidden')"
+                    class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500">
+                    <i class="ri-menu-line text-xl"></i>
+                </button>
+                <div
+                    class="w-8 h-8 bg-gradient-to-tr from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center text-white shadow-md">
+                    <i class="ri-heart-pulse-fill"></i>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-6 ml-auto">
+                <div
+                    class="hidden md:flex items-center gap-2 text-sm font-medium text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
+                    <i class="ri-hospital-line text-emerald-600"></i>
+                    <span>Primary: {{ patient.primary_hospital if patient and patient.primary_hospital else 'Not
+                        Assigned' }}</span>
+                </div>
+
+                <button
+                    class="relative w-10 h-10 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-emerald-600 hover:border-emerald-100 transition-all shadow-sm">
+                    <i class="ri-notification-3-line text-lg"></i>
+                    {% if notifications and notifications|length > 0 %}
+                    <span class="absolute top-2 right-2.5 w-2 h-2 bg-red-500 border-2 border-white rounded-full"></span>
+                    {% endif %}
+                </button>
+                <div class="flex items-center gap-3 pl-6 border-l border-slate-100">
+                    <div class="text-right hidden md:block">
+                        <p class="text-sm font-bold text-slate-800">{{ session.patient_name }}</p>
+                        <p class="text-[10px] uppercase font-bold text-slate-400">ID: {{ session.patient_id }}</p>
+                    </div>
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-indigo-200">
+                        {{ session.patient_name[0] }}
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="px-6 py-8 md:px-10 max-w-7xl mx-auto space-y-8">
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+            <div
+                class="mb-4 p-4 rounded-2xl flex items-center gap-3 {% if category == 'error' %}bg-red-50 text-red-600 border border-red-100{% else %}bg-emerald-50 text-emerald-600 border border-emerald-100{% endif %}">
+                <span class="font-bold text-sm">{{ message }}</span>
+                <button onclick="this.parentElement.remove()"
+                    class="ml-auto text-current opacity-50 hover:opacity-100"><i class="ri-close-line"></i></button>
+            </div>
+            {% endfor %}
+            {% endwith %}
+
+            <!-- 1. OVERVIEW (Dashboard Home) -->
+            <section x-show="currentSection === 'overview'" class="space-y-8" x-transition.opacity>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                    <div>
+                        <h2 class="text-3xl font-black text-slate-900 tracking-tight">Good Morning, {{
+                            session.patient_name.split(' ')[0] }}! 👋</h2>
+                        <p class="text-slate-500 font-medium mt-1">Here is your daily health overview.</p>
+                    </div>
+                    <a href="/patient/book_appointment"
+                        class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-xl shadow-slate-200 flex items-center gap-2 hover:scale-105 transform duration-200">
+                        <i class="ri-calendar-check-fill text-emerald-400"></i> Book New Appointment
+                    </a>
+                </div>
+
+                <!-- Next Appointment Card (Hero) -->
+                {% if upcoming_appointments %}
+                {% set next_appt = upcoming_appointments[0] %}
+                <div
+                    class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-[32px] p-8 text-white relative overflow-hidden shadow-2xl shadow-emerald-200/50">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                    <div class="relative z-10 flex flex-col md:flex-row gap-8 items-center justify-between">
+                        <div class="space-y-6">
+                            <div
+                                class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border border-white/10">
+                                <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span> Upcoming Appointment
+                            </div>
+                            <div>
+                                <h3 class="text-3xl font-bold mb-2">Dr. {{ next_appt.doctor_name }}</h3>
+                                <div class="flex items-center gap-6 text-emerald-50">
+                                    <span class="flex items-center gap-2"><i class="ri-hospital-line"></i> {{
+                                        next_appt.branch }}</span>
+                                    <span class="flex items-center gap-2"><i class="ri-vidicon-line"></i> {{
+                                        next_appt.mode }}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="bg-white/10 px-6 py-3 rounded-2xl border border-white/10 text-center">
+                                    <span class="block text-xs uppercase opacity-70 mb-1">Date</span>
+                                    <span class="block font-black text-xl">{{ next_appt.date.strftime('%d %b') }}</span>
+                                </div>
+                                <div class="bg-white/10 px-6 py-3 rounded-2xl border border-white/10 text-center">
+                                    <span class="block text-xs uppercase opacity-70 mb-1">Time</span>
+                                    <span class="block font-black text-xl">{{ next_appt.time_slot }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-white/10 backdrop-blur-md p-6 rounded-[24px] border border-white/10 w-full md:w-auto min-w-[300px]">
+                            <p class="text-xs uppercase font-bold opacity-70 mb-4">Actions</p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <a href="/patient/reschedule/{{ next_appt.appointment_id }}"
+                                    onclick="return confirm('Are you sure you want to reschedule? This will cancel your current appointment.')"
+                                    class="bg-white text-emerald-600 py-3 rounded-xl font-bold hover:bg-emerald-50 transition-colors flex items-center justify-center">Reschedule</a>
+                                <a href="#" @click.prevent="currentSection = 'video_consult'"
+                                    class="bg-emerald-800/50 text-white py-3 rounded-xl font-bold hover:bg-emerald-800/70 transition-colors text-center border border-white/20 flex items-center justify-center gap-2">
+                                    <i class="ri-video-on-line"></i> Join Call
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="bg-white rounded-[32px] p-8 border border-slate-100 text-center py-12 shadow-sm">
+                    <div
+                        class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-300">
+                        <i class="ri-calendar-2-line text-3xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">No Upcoming Appointments</h3>
+                    <p class="text-slate-400 text-sm mb-6 max-w-xs mx-auto">Stay on top of your health. Book a
+                        consultation today.</p>
+                    <a href="/patient/book_appointment" class="text-emerald-600 font-bold hover:underline">Find a Doctor
+                        &rarr;</a>
+                </div>
+                {% endif %}
+            </section>
+
+            <!-- 2. APPOINTMENTS SECTION -->
+            <section x-show="currentSection === 'appointments'" x-cloak class="space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">My Appointments</h2>
+                        <p class="text-slate-500">Manage your upcoming and past visits.</p>
+                    </div>
+                </div>
+
+                <div x-data="{ tab: 'upcoming' }"
+                    class="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
+                    <div class="flex border-b border-slate-100">
+                        <button @click="tab = 'upcoming'"
+                            :class="tab === 'upcoming' ? 'text-emerald-600 border-b-2 border-emerald-600' : 'text-slate-500'"
+                            class="flex-1 py-4 font-bold text-sm transition-all bg-slate-50 hover:bg-white">Upcoming</button>
+                        <button @click="tab = 'past'"
+                            :class="tab === 'past' ? 'text-emerald-600 border-b-2 border-emerald-600' : 'text-slate-500'"
+                            class="flex-1 py-4 font-bold text-sm transition-all bg-slate-50 hover:bg-white">Past
+                            History</button>
+                    </div>
+
+                    <div class="p-6">
+                        <!-- Upcoming Tab -->
+                        <div x-show="tab === 'upcoming'" class="space-y-4">
+                            {% for appt in upcoming_appointments %}
+                            <div
+                                class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-emerald-600 shadow-sm font-bold text-xl">
+                                        {{ appt.date.day }}
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-slate-900">Dr. {{ appt.doctor_name }}</h3>
+                                        <p class="text-xs text-slate-500">{{ appt.branch }} &bull; {{ appt.time_slot }}
+                                        </p>
+                                        <span
+                                            class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-100 text-emerald-700">{{
+                                            appt.status }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    {% if appt.mode == 'Video' %}
+                                    <button
+                                        class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200"><i
+                                            class="ri-video-chat-line"></i></button>
+                                    {% endif %}
+                                    <button
+                                        class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50">Reschedule</button>
+                                </div>
+                            </div>
+                            {% else %}
+                            <p class="text-center text-slate-400 py-8">No upcoming appointments.</p>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Past Tab -->
+                        <div x-show="tab === 'past'" class="space-y-4" style="display:none">
+                            {% for appt in past_appointments %}
+                            <div
+                                class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-100 opacity-75 hover:opacity-100 transition-opacity">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="w-12 h-12 bg-slate-200 rounded-xl flex items-center justify-center text-slate-500 shadow-sm font-bold text-lg">
+                                        <i class="ri-check-line"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-slate-900">Dr. {{ appt.doctor_name }}</h3>
+                                        <p class="text-xs text-slate-500">{{ appt.date.strftime('%Y-%m-%d') }} &bull; {{
+                                            appt.diagnosis|default('No diagnosis') }}</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button class="text-emerald-600 text-sm font-bold hover:underline">View
+                                        Prescription</button>
+                                </div>
+                            </div>
+                            {% else %}
+                            <p class="text-center text-slate-400 py-8">No appointment history.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. VIDEO CONSULTATION -->
+            <section x-show="currentSection === 'video_consult'" x-cloak class="space-y-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Video Consultations</h2>
+                        <p class="text-slate-500">Join your scheduled online sessions.</p>
+                    </div>
+                </div>
+
+                <!-- Filter for Video Mode -->
+                {% set video_appts = [] %}
+                {% for appt in upcoming_appointments %}
+                {% if appt.mode == 'Video' or appt.mode == 'Online' or true %}
+                <!-- NOTE: 'or true' added temporarily for DEMO purposes since mode might not be set in older data -->
+                {% set _ = video_appts.append(appt) %}
+                {% endif %}
+                {% endfor %}
+
+                {% if video_appts %}
+                <div class="grid grid-cols-1 gap-6">
+                    {% for appt in video_appts %}
+                    <div
+                        class="bg-slate-900 rounded-[32px] overflow-hidden shadow-2xl relative min-h-[400px] flex flex-col items-center justify-center text-center p-8">
+                        <!-- Backgrounds -->
+                        <div
+                            class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-20">
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent">
+                        </div>
+
+                        <div class="relative z-10 max-w-md w-full">
+                            <div
+                                class="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_30px_rgba(16,185,129,0.4)] animate-pulse">
+                                <i class="ri-vidicon-line text-3xl text-white"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-white mb-1">Session with Dr. {{ appt.doctor_name }}</h2>
+                            <p class="text-slate-400 text-sm mb-6">{{ appt.date.strftime('%d %b, %Y') }} at {{
+                                appt.time_slot }}</p>
+
+                            <a href="/video_call/{{ appt.appointment_id }}" target="_blank"
+                                class="block w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-lg transition-all shadow-lg transform hover:scale-105 flex items-center justify-center gap-2">
+                                <i class="ri-video-on-line"></i> Join Live Call Now
+                            </a>
+                            <p class="text-slate-500 text-xs mt-4">Please ensure your camera and microphone are allowed.
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-12 bg-white rounded-3xl border border-slate-100">
+                    <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ri-video-off-line text-3xl text-slate-300"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">No Video Consultations Scheduled</h3>
+                    <p class="text-slate-400 mb-6">Book an appointment with 'Video' mode to see it here.</p>
+                    <a href="/patient/book_appointment" class="text-emerald-600 font-bold hover:underline">Book
+                        Appointment &rarr;</a>
+                </div>
+                {% endif %}
+            </section>
+
+            <!-- 4. MEDICAL RECORDS -->
+            <section x-show="currentSection === 'medical_records'" x-cloak class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Profile Card -->
+                    <div class="bg-white p-6 rounded-[24px] border border-slate-100 h-fit">
+                        <div class="text-center mb-6">
+                            <div
+                                class="w-24 h-24 bg-slate-100 rounded-full mx-auto mb-4 overflow-hidden border-4 border-white shadow-lg">
+                                <img src="/uploads/profiles/{{ session.get('profile_image', 'default.png') }}"
+                                    onerror="this.src='https://ui-avatars.com/api/?name={{ session.patient_name }}&background=0d9488&color=fff'"
+                                    class="w-full h-full object-cover">
+                            </div>
+                            <h3 class="font-bold text-lg text-slate-900">{{ session.patient_name }}</h3>
+                            <p class="text-slate-500 text-sm">Patient ID: {{ session.patient_id }}</p>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center py-2 border-b border-slate-50">
+                                <span class="text-slate-500 text-sm">Age</span>
+                                <span class="font-bold text-slate-800">{{ patient.age if patient and patient.age else
+                                    '--' }} Years</span>
+                            </div>
+                            <div class="flex justify-between items-center py-2 border-b border-slate-50">
+                                <span class="text-slate-500 text-sm">Blood Group</span>
+                                <span class="font-bold text-slate-800">{{ patient.blood_group if patient and
+                                    patient.blood_group else '--' }}</span>
+                            </div>
+                            <div class="flex justify-between items-center py-2 border-b border-slate-50">
+                                <span class="text-slate-500 text-sm">Height</span>
+                                <span class="font-bold text-slate-800">-- cm</span>
+                            </div>
+                            <div class="flex justify-between items-center py-2 border-b border-slate-50">
+                                <span class="text-slate-500 text-sm">Weight</span>
+                                <span class="font-bold text-slate-800">-- kg</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Records List -->
+                    <div class="md:col-span-2 space-y-6">
+                        <div class="bg-white p-6 rounded-[24px] border border-slate-100">
+                            <h3 class="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                                <i class="ri-file-text-line text-emerald-500"></i> Chronic Conditions
+                            </h3>
+                            <div class="flex flex-wrap gap-2">
+                                {% for condition in patient.get('chronic_conditions', []) if patient %}
+                                <span
+                                    class="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-sm font-bold border border-red-100">{{
+                                    condition }}</span>
+                                {% else %}
+                                <p class="text-slate-400 text-sm">No chronic conditions recorded.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-[24px] border border-slate-100">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="font-bold text-slate-900 flex items-center gap-2">
+                                    <i class="ri-folder-open-line text-blue-500"></i> Uploaded Reports
+                                </h3>
+                                <div class="flex gap-2">
+                                    <a href="/patient/book_lab_test"
+                                        class="text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-indigo-100 transition-colors">+
+                                        Book Lab Test</a>
+                                    <button
+                                        class="text-blue-600 border border-blue-100 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors">
+                                        Upload New</button>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3">
+                                {% for report in medical_reports %}
+                                <div
+                                    class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100 group">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-10 h-10 bg-red-50 text-red-500 rounded-lg flex items-center justify-center">
+                                            <i class="ri-file-pdf-line text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-slate-700 text-sm">{{ report.name }}</p>
+                                            <p class="text-xs text-slate-400">{{ report.date }}</p>
+                                        </div>
+                                    </div>
+                                    <button class="text-slate-400 hover:text-emerald-600"><i
+                                            class="ri-download-line text-lg"></i></button>
+                                </div>
+                                {% else %}
+                                <div class="text-center py-8 border-2 border-dashed border-slate-100 rounded-xl">
+                                    <i class="ri-file-add-line text-3xl text-slate-300 mb-2"></i>
+                                    <p class="text-slate-400 text-sm">No reports uploaded yet.</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. PRESCRIPTIONS -->
+            <section x-show="currentSection === 'prescriptions'" x-cloak class="space-y-6">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <h2 class="text-2xl font-bold text-slate-800">My Prescriptions</h2>
+                        <a href="/patient/shop_medicines"
+                            class="text-sm font-bold text-emerald-600 bg-emerald-50 px-4 py-2 rounded-lg hover:bg-emerald-100 transition-colors flex items-center gap-1">
+                            <i class="ri-add-circle-line"></i> Order New Medicines
+                        </a>
+                    </div>
+
+                    <div class="relative">
+                        <input type="text" placeholder="Search medicines..."
+                            class="pl-10 pr-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 w-64 text-sm">
+                        <i class="ri-search-line absolute left-3 top-2.5 text-slate-400"></i>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    {% for prescription in my_prescriptions %}
+                    <div
+                        class="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm transition-all hover:shadow-md">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center font-bold text-xl shadow-sm">
+                                    Rx
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-lg text-slate-900">Dr. {{ prescription.doctor_name }}</h3>
+                                    <p class="text-slate-500 text-sm">{{ prescription.created_at.strftime('%d %b %Y') }}
+                                        &bull; Diagnosis: {{ prescription.diagnosis }}</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button
+                                    class="w-10 h-10 rounded-xl border border-slate-200 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 flex items-center justify-center"
+                                    title="Download PDF"><i class="ri-download-line"></i></button>
+                                <button
+                                    class="w-10 h-10 rounded-xl border border-slate-200 text-slate-500 hover:text-blue-600 hover:bg-blue-50 flex items-center justify-center"
+                                    title="Share"><i class="ri-share-forward-line"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 rounded-xl p-4 mb-6">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Medications</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {% for med in prescription.medications %}
+                                <div class="flex items-center gap-3 bg-white p-3 rounded-lg border border-slate-100">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">
+                                        {{ loop.index }}
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-700 text-sm">{{ med.name }}</p>
+                                        <p class="text-xs text-slate-500">{{ med.dosage }} - {{ med.duration }}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <form action="/patient/order_medicine" method="POST">
+                                <input type="hidden" name="prescription_id" value="{{ prescription._id }}">
+                                <button type="submit"
+                                    class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-emerald-200 flex items-center gap-2">
+                                    <i class="ri-shopping-cart-line"></i> Order from Pharmacy
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-12">
+                        <p class="text-slate-400">No prescriptions found.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- 6 & 7. PAYMENTS & PHARMACY (Simplified) -->
+            <section x-show="currentSection === 'payments'" x-cloak class="space-y-6">
+                <h2 class="text-2xl font-bold text-slate-800">Payments & Invoices</h2>
+                <div class="bg-white rounded-[24px] border border-slate-100 overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 border-b border-slate-100">
+                            <tr>
+                                <th class="p-4 font-bold text-slate-600">Invoice ID</th>
+                                <th class="p-4 font-bold text-slate-600">Service</th>
+                                <th class="p-4 font-bold text-slate-600">Date</th>
+                                <th class="p-4 font-bold text-slate-600">Amount</th>
+                                <th class="p-4 font-bold text-slate-600">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <!-- Loop payments here -->
+                            <tr>
+                                <td class="p-4 text-slate-500">#INV-2024-001</td>
+                                <td class="p-4 font-bold text-slate-800">Consultation - Dr. Priya</td>
+                                <td class="p-4 text-slate-500">Jan 12, 2024</td>
+                                <td class="p-4 font-bold text-slate-800">₹500</td>
+                                <td class="p-4"><span
+                                        class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-bold">Paid</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section x-show="currentSection === 'pharmacy'" x-cloak class="space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-slate-800">Pharmacy Orders</h2>
+                    <button class="text-emerald-600 font-bold hover:bg-emerald-50 px-4 py-2 rounded-lg">New
+                        Order</button>
+                </div>
+                <!-- Order History List -->
+                <div class="bg-white p-8 rounded-[24px] border border-slate-100 text-center">
+                    <p class="text-slate-400">No active medication orders.</p>
+                </div>
+            </section>
+
+
+            <!-- 9. PROFILE & SETTINGS -->
+            <section x-show="currentSection === 'profile'" x-cloak class="space-y-6">
+                <div class="max-w-2xl mx-auto bg-white rounded-[32px] p-8 border border-slate-100 shadow-sm">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-6">Profile Settings</h2>
+                    <form action="/patient/update_profile" method="POST" class="space-y-5">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Full Name</label>
+                                <input type="text" name="name" value="{{ session.patient_name }}"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-700 outline-none focus:border-emerald-500 transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Mobile
+                                    Number</label>
+                                <input type="text" name="phone" value="{{ session.patient }}" readonly
+                                    class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-500 cursor-not-allowed">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Age</label>
+                                <input type="number" name="age"
+                                    value="{{ patient.age if patient and patient.age else '' }}"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-700 outline-none focus:border-emerald-500 transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Blood Group</label>
+                                <select name="blood_group"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-700 outline-none focus:border-emerald-500 transition-all">
+                                    <option
+                                        value="{{ patient.blood_group if patient and patient.blood_group else '' }}">{{
+                                        patient.blood_group if patient and patient.blood_group else 'Select' }}</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                </select>
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Emergency
+                                    Contact</label>
+                                <input type="text" name="emergency_contact"
+                                    value="{{ patient.emergency_contact if patient and patient.emergency_contact else '' }}"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-semibold text-slate-700 outline-none focus:border-emerald-500 transition-all">
+                            </div>
+                        </div>
+                        <div class="pt-4 flex justify-end">
+                            <button type="submit"
+                                class="bg-emerald-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200">Save
+                                Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        // AlpineJS will handle the state management for sections
+        // Lottie animations or other scripts can go here
+    </script>
+</body>
+
+</html>

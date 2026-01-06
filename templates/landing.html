@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hey Doc!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <link rel="stylesheet"
+        href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">
+    <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
+</head>
+
+<body class="font-sans bg-white">
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <img src="/static/images/heydoc_logo.png" alt="Hey Doc Logo"
+                        class="h-10 w-10 rounded-lg object-contain">
+                    <span class="text-xl font-bold text-gray-800">Hey Doc!</span>
+                </div>
+                <div class="hidden md:flex space-x-8 text-gray-700 font-medium" id="navbar-menu-desktop">
+                    <a href="#home" class="hover:text-teal-600 transition-colors">Home</a>
+                    <a href="#doctor" class="hover:text-teal-600 transition-colors">Meet Doctor</a>
+                    <a href="#contact" class="hover:text-teal-600 transition-colors">Contact</a>
+                    <a href="/patient/book_appointment"
+                        class="bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700 shadow-md hover:shadow-lg transition-all font-bold">Book
+                        Appointment</a>
+                    <a href="/login"
+                        class="bg-teal-600 text-white px-6 py-2 rounded-full hover:bg-teal-700 shadow-md hover:shadow-lg transition-all font-bold">Staff
+                        Login</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700">
+                        <i class="ri-menu-line text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="md:hidden hidden bg-white py-2 shadow-lg">
+            <a href="#home" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Home</a>
+            <a href="#doctor" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Meet Doctor</a>
+            <a href="#contact" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Contact</a>
+            <a href="/login" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Doctor Login</a>
+        </div>
+    </nav>
+
+    <section id="home"
+        class="pt-20 min-h-screen bg-gradient-to-br from-teal-600 to-teal-300 text-white flex items-center">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                Welcome to Hey Doc
+            </h1>
+            <p class="text-xl mb-8 max-w-3xl mx-auto">
+                Experience holistic homeopathic treatment tailored to your unique needs, guided by expertise and
+                empathy. Our approach combines traditional healing wisdom with modern understanding to restore your
+                natural balance.
+            </p>
+            <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                <a href="#doctor"
+                    class="w-full md:w-auto bg-white text-teal-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-block">
+                    Meet the Doctor
+                </a>
+                <a href="#contact"
+                    class="w-full md:w-auto border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-teal-600 transition-colors inline-block">
+                    Contact Us
+                </a>
+            </div>
+        </div>
+    </section>
+    <section id="doctor" class="py-20 bg-white">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-4xl mx-auto">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Dr. Priya Sharma</h2>
+                    <p class="text-lg text-gray-600">BHMS, MD (Homeopathy), 15+ Years Experience</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="ri-mental-health-line text-teal-600 text-2xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800">Psychiatry & Mental Health</h3>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="ri-graduation-cap-line text-teal-600 text-2xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800">Learning Disabilities</h3>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="ri-heart-line text-teal-600 text-2xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-800">Mood Disorders</h3>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                            <i class="ri-phone-line text-teal-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-800">Phone</p>
+                            <p class="text-gray-600">+91 98765 43210</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                            <i class="ri-mail-line text-teal-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-800">Email</p>
+                            <p class="text-gray-600">dr.priya@Hey Dochomoeo.com</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                            <i class="ri-map-pin-line text-teal-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-800">Location</p>
+                            <p class="text-gray-600">Hyderabad, India</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">What Our Patients Say</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mr-3">
+                            <i class="ri-user-line text-teal-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Rajesh Kumar</h3>
+                            <div class="flex text-yellow-400">
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">"Dr. Sharma's homeopathic treatment completely transformed my
+                        chronic anxiety. Her compassionate approach and personalized care made all the difference in my
+                        healing journey."</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mr-3">
+                            <i class="ri-user-line text-teal-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Meera Patel</h3>
+                            <div class="flex text-yellow-400">
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">"My daughter's learning difficulties improved significantly under
+                        Dr. Sharma's care. The holistic approach addressed not just symptoms but the root cause of her
+                        challenges."</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mr-3">
+                            <i class="ri-user-line text-teal-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Arjun Singh</h3>
+                            <div class="flex text-yellow-400">
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                                <i class="ri-star-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">"Professional, knowledgeable, and genuinely caring. Dr. Sharma's
+                        treatment helped me overcome depression naturally without harsh side effects. Highly
+                        recommended!"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-20 bg-white">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Contact Us</h2>
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="bg-white rounded-lg shadow-md p-8">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-6">Get in Touch</h3>
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                                <i class="ri-map-pin-line text-teal-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-800">Address</p>
+                                <p class="text-gray-600">123 Main Street, Hyderabad, India</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                                <i class="ri-mail-line text-teal-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-800">Email</p>
+                                <p class="text-gray-600">info@Hey Dochomoeo.com</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                                <i class="ri-phone-line text-teal-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-800">Phone</p>
+                                <p class="text-gray-600">+91 12345 67890</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <h4 class="font-semibold text-gray-800 mb-4">Follow Us</h4>
+                        <div class="flex space-x-4">
+                            <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+                                <i class="ri-facebook-fill text-teal-600"></i>
+                            </div>
+                            <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+                                <i class="ri-twitter-fill text-teal-600"></i>
+                            </div>
+                            <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+                                <i class="ri-instagram-fill text-teal-600"></i>
+                            </div>
+                            <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+                                <i class="ri-linkedin-fill text-teal-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-8">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-6">Send Message</h3>
+                    <form class="space-y-4">
+                        <input type="text" placeholder="Your Name"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-500">
+                        <input type="email" placeholder="Your Email"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-500">
+                        <input type="tel" placeholder="Your Phone"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-500">
+                        <textarea placeholder="Your Message" rows="4"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-500"></textarea>
+                        <button type="submit"
+                            class="w-full bg-teal-600 text-white py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="bg-teal-600 text-white p-2 rounded-full">
+                            <i class="ri-heart-pulse-line"></i>
+                        </div>
+                        <span class="text-xl font-bold">Hey Doc!</span>
+                    </div>
+                    <p class="text-gray-300 mb-4">
+                        Providing compassionate homeopathic care with personalized treatment approaches for holistic
+                        healing and wellness.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-300 hover:text-white transition-colors">Home</a></li>
+                        <li><a href="#doctor" class="text-gray-300 hover:text-white transition-colors">Meet a doctor</a>
+                        </li>
+                        <li><a href="#contact" class="text-gray-300 hover:text-white transition-colors">contact</a></li>
+
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Connect With Us</h4>
+                    <div class="flex space-x-4 mb-4">
+                        <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+                            <i class="ri-facebook-fill text-white"></i>
+                        </div>
+                        <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+                            <i class="ri-twitter-fill text-white"></i>
+                        </div>
+                        <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+                            <i class="ri-instagram-fill text-white"></i>
+                        </div>
+                        <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+                            <i class="ri-linkedin-fill text-white"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm"> 2024 Hey Doc!. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            if (mobileMenuButton && mobileMenu) { // Ensure elements exist
+                mobileMenuButton.addEventListener('click', function () {
+                    mobileMenu.classList.toggle('hidden');
+                });
+
+                // Close the mobile menu when a link is clicked (for smoother navigation)
+                mobileMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.add('hidden');
+                    });
+                });
+            }
+        });
+
+        // Function to fully reset the Dialogflow widget (new session)
+        function clearChatAndRefresh() {
+            try {
+                const old = document.querySelector('df-messenger');
+                if (!old) return;
+                const parent = old.parentNode;
+
+                // Best-effort: clear any cached chat stored by the widget
+                try {
+                    Object.keys(sessionStorage).forEach(k => {
+                        if (k.toLowerCase().includes('df') || k.toLowerCase().includes('dialogflow')) {
+                            sessionStorage.removeItem(k);
+                        }
+                    });
+                    Object.keys(localStorage).forEach(k => {
+                        if (k.toLowerCase().includes('df') || k.toLowerCase().includes('dialogflow')) {
+                            localStorage.removeItem(k);
+                        }
+                    });
+                } catch (_) { }
+
+                // Remove old element first, then recreate after a short delay
+                const attrs = Array.from(old.attributes).reduce((acc, a) => { acc[a.name] = a.value; return acc; }, {});
+                parent.removeChild(old);
+                setTimeout(() => {
+                    const fresh = document.createElement('df-messenger');
+                    Object.keys(attrs).forEach(name => {
+                        if (name.toLowerCase() !== 'session-id') {
+                            fresh.setAttribute(name, attrs[name]);
+                        }
+                    });
+                    const newSession = 'session-' + Date.now();
+                    fresh.setAttribute('session-id', newSession);
+
+                    const bubble = document.createElement('df-messenger-chat-bubble');
+                    bubble.setAttribute('chat-title', 'Hey Doc!');
+                    bubble.setAttribute('chat-icon', '/file.jpeg');
+                    fresh.appendChild(bubble);
+
+                    parent.appendChild(fresh);
+                }, 60);
+            } catch (e) {
+                console.log('Refresh failed, reloading page as fallback', e);
+                location.reload();
+            }
+        }
+    </script>
+
+    <!-- Dialogflow Chatbot -->
+    <df-messenger project-id="heydoc-473715-d6" agent-id="8e2c9653-bd6b-4151-be4d-75cc6c44b35e" language-code="en"
+        max-query-length="-1">
+        <df-messenger-chat-bubble chat-title="Hey Doc">
+        </df-messenger-chat-bubble>
+    </df-messenger>
+    <style>
+        df-messenger {
+            z-index: 999;
+            position: fixed;
+            --df-messenger-font-color: #000;
+            --df-messenger-font-family: Google Sans;
+            --df-messenger-chat-background: #f3f6fc;
+            --df-messenger-message-user-background: #d3e3fd;
+            --df-messenger-message-bot-background: #fff;
+            bottom: 16px;
+            right: 16px;
+        }
+
+        /* Small floating refresh button and starter prompt */
+        #df-refresh-btn {
+            position: fixed;
+            bottom: 84px;
+            /* sit above bubble */
+            right: 28px;
+            width: 36px;
+            height: 36px;
+            border-radius: 9999px;
+            background: #10b981;
+            /* teal-500 */
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+        }
+
+        #df-starter-tip {
+            position: fixed;
+            bottom: 130px;
+            right: 28px;
+            background: #ffffff;
+            color: #111827;
+            border: 1px solid #e5e7eb;
+            padding: 8px 12px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            max-width: 260px;
+        }
+    </style>
+
+    <button id="df-refresh-btn" type="button" title="Refresh chat" onclick="clearChatAndRefresh()"></button>
+    <div id="df-starter-tip">Hi! Ask about booking, timings, fees, or cancelling an appointment.</div>
+    <script>
+        // Hide starter tip after a few seconds and when the chat is interacted with
+        function hideStarterTip() {
+            var tip = document.getElementById('df-starter-tip');
+            if (tip) tip.style.display = 'none';
+        }
+        setTimeout(hideStarterTip, 5000);
+        document.addEventListener('click', function (e) {
+            const df = document.querySelector('df-messenger');
+            if (df && df.contains(e.target)) hideStarterTip();
+        });
+
+        // Auto-greet once per session by sending an initial 'hi' to the bot
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                const df = document.querySelector('df-messenger');
+                if (!df) return;
+                const greet = function () {
+                    if (sessionStorage.getItem('df_greeted') === '1') return;
+                    sessionStorage.setItem('df_greeted', '1');
+                    try { if (typeof df.renderCustomText === 'function') df.renderCustomText(''); } catch (_) { }
+                    try { if (typeof df.sendQuery === 'function') df.sendQuery('hi'); } catch (_) { }
+                };
+                if (typeof df.sendQuery === 'function') {
+                    greet();
+                } else {
+                    df.addEventListener('df-messenger-loaded', greet);
+                }
+            } catch (_) { }
+        });
+    </script>
+</body>
+
+</html>

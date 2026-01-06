@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}My Payroll History - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-slate-50 pt-32 pb-20 px-4">
+    <div class="max-w-4xl mx-auto">
+        <!-- Back Button -->
+        <div class="mb-8">
+            <a href="{{ '/reception_dashboard' if 'receptionist' in session else '/dashboard' if 'doctor' in session else '/admin/dashboard' if 'admin' in session else '/' }}"
+                class="inline-flex items-center text-slate-500 hover:text-teal-600 transition-colors font-bold text-xs uppercase tracking-widest group">
+                <i class="ri-arrow-left-line mr-2 group-hover:-translate-x-1 transition-transform"></i> Back to
+                Dashboard
+            </a>
+        </div>
+
+        <!-- Header -->
+        <div class="mb-12 flex justify-between items-end">
+            <div>
+                <h1 class="text-4xl font-black text-slate-900 tracking-tight mb-2">{{ _('my_payroll') }}</h1>
+                <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">{{ _('payroll_desc') }}</p>
+            </div>
+            <div class="text-right">
+                <span class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{{
+                    _('current_net_salary') }}</span>
+                <span class="text-3xl font-black text-teal-600 tracking-tight">₹{{
+                    current_salary.net_salary|default('33,250') }}</span>
+            </div>
+        </div>
+
+        <!-- Latest Snapshot -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">{{ _('base_salary') }}
+                </p>
+                <h3 class="text-2xl font-black text-slate-800">₹{{ current_salary.base_salary|default('35,000') }}</h3>
+            </div>
+            <div class="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">{{ _('bonuses') }}</p>
+                <h3 class="text-2xl font-black text-emerald-500">+{{ current_salary.bonus_percent|default(0) }}%</h3>
+            </div>
+            <div class="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">{{ _('deductions') }}
+                </p>
+                <h3 class="text-2xl font-black text-rose-500">-{{ current_salary.deductions_percent|default(5) }}%</h3>
+            </div>
+        </div>
+
+        <!-- History Table -->
+        <div class="bg-white rounded-[40px] border border-slate-100 shadow-sm overflow-hidden">
+            <div class="p-8 border-b border-slate-50 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-slate-800">{{ _('disbursement_history') }}</h2>
+                <button
+                    class="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 hover:bg-teal-50 hover:text-teal-600 flex items-center justify-center transition-all">
+                    <i class="ri-download-2-line"></i>
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-slate-50/50 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                            <th class="px-8 py-5">{{ _('month') }}</th>
+                            <th class="px-8 py-5">{{ _('status') }}</th>
+                            <th class="px-8 py-5 text-right">{{ _('amount') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50">
+                        <tr class="hover:bg-slate-50/30 transition-colors">
+                            <td class="px-8 py-6 font-bold text-slate-700">January 2026</td>
+                            <td class="px-8 py-6">
+                                <span
+                                    class="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[9px] font-black uppercase tracking-widest">{{
+                                    _('disbursed') }}</span>
+                            </td>
+                            <td class="px-8 py-6 text-right font-black text-slate-900">₹{{
+                                current_salary.net_salary|default('33,250') }}</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50/30 transition-colors">
+                            <td class="px-8 py-6 font-bold text-slate-700">December 2025</td>
+                            <td class="px-8 py-6">
+                                <span
+                                    class="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[9px] font-black uppercase tracking-widest">{{
+                                    _('disbursed') }}</span>
+                            </td>
+                            <td class="px-8 py-6 text-right font-black text-slate-900">₹{{
+                                current_salary.net_salary|default('33,250') }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="p-8 bg-slate-50/50 text-center">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{
+                    _('end_of_financial_records') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

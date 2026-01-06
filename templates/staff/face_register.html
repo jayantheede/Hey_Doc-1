@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face ID Registration | Hey Doc!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap');
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 48px;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.05);
+        }
+
+        .video-viewport {
+            background: #000;
+            border-radius: 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
+        }
+
+        .scan-line {
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #0ea5e9, transparent);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            filter: blur(1px);
+            animation: scan-loop 4s ease-in-out infinite;
+        }
+
+        @keyframes scan-loop {
+            0% {
+                top: 0%;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        .viewfinder-corner {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-color: rgba(14, 165, 233, 0.3);
+            border-style: solid;
+        }
+
+        .corner-tl {
+            top: 24px;
+            left: 24px;
+            border-width: 2px 0 0 2px;
+            border-radius: 16px 0 0 0;
+        }
+
+        .corner-tr {
+            top: 24px;
+            right: 24px;
+            border-width: 2px 2px 0 0;
+            border-radius: 0 16px 0 0;
+        }
+
+        .corner-bl {
+            bottom: 24px;
+            left: 24px;
+            border-width: 0 0 2px 2px;
+            border-radius: 0 0 0 16px;
+        }
+
+        .corner-br {
+            bottom: 24px;
+            right: 24px;
+            border-width: 0 2px 2px 0;
+            border-radius: 0 0 16px 0;
+        }
+
+        .btn-glass {
+            background: linear-gradient(135deg, #0d9488 0%, #0ea5e9 100%);
+            box-shadow: 0 15px 35px -10px rgba(13, 148, 136, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-glass:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px -10px rgba(13, 148, 136, 0.6);
+        }
+
+        .btn-glass:active {
+            transform: translateY(1px) scale(0.98);
+        }
+    </style>
+</head>
+
+<body class="flex items-center justify-center p-6 bg-slate-50">
+    <div class="fixed top-[-10%] left-[-5%] w-[40%] h-[40%] bg-teal-200/20 blur-[120px] rounded-full"></div>
+    <div class="fixed bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-blue-200/20 blur-[120px] rounded-full"></div>
+
+    <div class="max-w-xl w-full relative z-10">
+        <div class="glass-container p-12 md:p-16 text-center">
+
+            <div
+                class="inline-flex items-center gap-3 px-4 py-2 bg-teal-500/10 border border-teal-500/20 rounded-full mb-8">
+                <i class="ri-user-face-line text-teal-600"></i>
+                <span class="text-[10px] font-black uppercase tracking-[3px] text-teal-700">Face Registration
+                    Node</span>
+            </div>
+
+            <div class="mb-12">
+                <h1 class="text-4xl font-black text-slate-800 tracking-tight mb-4">Face Signature</h1>
+                <p class="text-slate-500 font-medium leading-relaxed max-w-sm mx-auto text-sm">
+                    Register your facial topology to unlock secure, hands-free workstation access.
+                </p>
+            </div>
+
+            <!-- Viewport -->
+            <div class="relative mb-12">
+                <div class="aspect-square w-full max-w-[340px] mx-auto video-viewport border-4 border-white shadow-2xl">
+                    <video id="video" autoplay playsinline
+                        class="w-full h-full object-cover transform scale-x-[-1] opacity-90"></video>
+
+                    <div class="scan-line" id="scanner"></div>
+
+                    <!-- HUD Elements -->
+                    <div class="viewfinder-corner corner-tl"></div>
+                    <div class="viewfinder-corner corner-tr"></div>
+                    <div class="viewfinder-corner corner-bl"></div>
+                    <div class="viewfinder-corner corner-br"></div>
+
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div class="w-64 h-64 border border-teal-500/10 rounded-full border-dashed animate-spin-slow">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Feedback -->
+                <div
+                    class="absolute -bottom-5 left-1/2 -translate-x-1/2 bg-white/80 backdrop-blur-xl border border-white px-8 py-3.5 rounded-2xl shadow-xl min-w-[260px]">
+                    <div class="flex items-center justify-center gap-3">
+                        <span class="relative flex h-2 w-2">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
+                        </span>
+                        <p id="status" class="text-[10px] font-black uppercase tracking-[3px] text-teal-800">Uplink
+                            Ready</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6 max-w-sm mx-auto" id="controls">
+                <button id="register-btn"
+                    class="btn-glass w-full text-white py-6 rounded-[28px] font-black uppercase tracking-[3px] text-xs flex items-center justify-center gap-4">
+                    <i class="ri-scan-2-line text-lg"></i>
+                    Initialize Face Scan
+                </button>
+                <div class="flex items-center justify-center pt-2">
+                    <a href="/"
+                        class="text-[10px] font-black uppercase tracking-[3px] text-slate-400 hover:text-teal-600 transition-colors">
+                        Bypass Enrollment
+                    </a>
+                </div>
+            </div>
+
+            <!-- Success State -->
+            <div id="success-state"
+                class="hidden absolute inset-0 bg-white/95 backdrop-blur-2xl flex flex-col items-center justify-center text-center p-12 z-50 rounded-[48px] animate-in zoom-in duration-500">
+                <div
+                    class="w-24 h-24 rounded-[32px] bg-teal-500 text-white flex items-center justify-center shadow-2xl shadow-teal-500/40 mb-10 translate-y-[-20px]">
+                    <i class="ri-checkbox-circle-fill text-5xl"></i>
+                </div>
+                <h2 class="text-3xl font-black text-slate-800 mb-4">Face ID Active</h2>
+                <p class="text-slate-500 text-sm font-medium leading-relaxed max-w-[260px]">
+                    Your face profile is now synchronized. Redirecting to your workstation settings.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="canvas" class="hidden"></canvas>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const registerBtn = document.getElementById('register-btn');
+        const status = document.getElementById('status');
+        const successState = document.getElementById('success-state');
+
+        async function initCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } }
+                });
+                video.srcObject = stream;
+            } catch (err) {
+                status.innerText = "Camera Blocked";
+                status.style.color = "#ef4444";
+            }
+        }
+
+        registerBtn.addEventListener('click', async () => {
+            // Enhanced readiness check
+            if (!video.srcObject || video.readyState < 2) {
+                status.innerText = "Camera Not Ready - Please Wait";
+                status.classList.add('text-amber-500');
+                return;
+            }
+
+            if (video.videoWidth === 0 || video.videoHeight === 0) {
+                status.innerText = "Loading Camera Stream...";
+                status.classList.add('text-amber-500');
+                return;
+            }
+
+            registerBtn.disabled = true;
+            registerBtn.classList.add('opacity-50', 'pointer-events-none');
+            registerBtn.innerHTML = '<i class="ri-loader-4-line animate-spin text-lg"></i> ENROLLING...';
+            status.innerText = "Encoding Profile...";
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const image = canvas.toDataURL('image/jpeg', 0.85);
+
+            try {
+                const response = await fetch('/staff/face_register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    successState.classList.remove('hidden');
+                    setTimeout(() => {
+                        window.location.href = data.redirect;
+                    }, 2500);
+                } else {
+                    status.innerText = data.message || "Enrollment Error";
+                    status.classList.add('text-red-500');
+                    registerBtn.disabled = false;
+                    registerBtn.classList.remove('opacity-50', 'pointer-events-none');
+                    registerBtn.innerHTML = '<i class="ri-scan-2-line text-lg"></i> Initialize Face Scan';
+                }
+            } catch (err) {
+                status.innerText = "Network Failure";
+                registerBtn.disabled = false;
+                registerBtn.classList.remove('opacity-50', 'pointer-events-none');
+            }
+        });
+
+        window.onload = initCamera;
+    </script>
+</body>
+
+</html>

@@ -1,14 +1,68 @@
+# Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
 .Python
 env/
 venv/
 ENV/
-.venv/
+*.egg-info/
+dist/
+build/
+
+# Flask
+instance/
+.webassets-cache
+
+# Environment variables
 .env
-.ipynb_checkpoints/
-uploads/
-/Users/jayanth/.gemini/
+.env.local
+.flaskenv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Test files
+test_*.py
+*_test.py
+*_helpers.py
+check_*.py
+verify_*.py
+db_check.py
+db_user_check.py
+setup_test_users.py
+enroll_admin_face.py
+clear_admin_face.py
+reset_password.py
+seed_*.py
+
+# Logs
+*.log
+ngrok.log
+
+# Database
+*.db
+*.sqlite
+
+# Backup and temporary files
+*.backup
+*.temp
+*.tmp
+uploads/
+temp/
+*.txt
+!requirements.txt
+
+# Standalone route files (already integrated in app.py)
+*_route.py
+add_remaining_features.py
+find_mismatch.py

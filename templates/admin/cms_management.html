@@ -1,0 +1,361 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}CMS & Site Settings - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">CMS & Site Settings</h1>
+            <p class="text-gray-500 text-sm">Global personalization and homepage management</p>
+        </div>
+        <div class="flex space-x-3">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div
+                class="px-4 py-2 bg-{{ 'emerald' if category == 'success' else 'red' }}-50 text-{{ 'emerald' if category == 'success' else 'red' }}-600 rounded-xl text-xs font-bold border border-{{ 'emerald' if category == 'success' else 'red' }}-100 animate-pulse">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <!-- CMS Tabs -->
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="flex border-b border-gray-100">
+            <button onclick="switchTab('homepage')" id="tab-homepage"
+                class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest transition-all border-b-2 border-{{ site_settings.primary_color|default('teal') }}-600 text-{{ site_settings.primary_color|default('teal') }}-600">
+                <i class="ri-layout-masonry-line mr-2"></i> Homepage Editor
+            </button>
+            <button onclick="switchTab('theme')" id="tab-theme"
+                class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-{{ site_settings.primary_color|default('teal') }}-600 transition-all border-b-2 border-transparent">
+                <i class="ri-palette-line mr-2"></i> Theme & Branding
+            </button>
+            <button onclick="switchTab('setup')" id="tab-setup"
+                class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-{{ site_settings.primary_color|default('teal') }}-600 transition-all border-b-2 border-transparent">
+                <i class="ri-settings-4-line mr-2"></i> Global Setup
+            </button>
+            <button onclick="switchTab('fees')" id="tab-fees"
+                class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-{{ site_settings.primary_color|default('teal') }}-600 transition-all border-b-2 border-transparent">
+                <i class="ri-money-rupee-circle-line mr-2"></i> Consultation Fees
+            </button>
+        </div>
+
+        <div class="p-8">
+            <!-- Homepage Editor -->
+            <div id="content-homepage" class="space-y-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800">Dynamic Landing Page</h3>
+                        <p class="text-xs text-gray-400">Modify the HTML/Tailwind structure of your main portal</p>
+                    </div>
+                </div>
+
+                <form action="/admin/cms" method="POST" class="space-y-4">
+                    <input type="hidden" name="action" value="update_template">
+                    <div class="rounded-2xl overflow-hidden border border-gray-100 bg-gray-900 shadow-inner">
+                        <textarea name="content" rows="18"
+                            class="w-full bg-transparent text-emerald-400 font-mono text-sm p-6 outline-none focus:ring-0 resize-none"
+                            spellcheck="false">{{ home_content }}</textarea>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit"
+                            class="px-10 py-4 bg-{{ site_settings.primary_color|default('teal') }}-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-{{ site_settings.primary_color|default('teal') }}-900/10 hover:opacity-90 transition-all flex items-center">
+                            <i class="ri-save-line mr-2"></i> Deploy Template
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Theme & Branding -->
+            <div id="content-theme" class="hidden">
+                <form action="/admin/cms" method="POST" class="space-y-10">
+                    <input type="hidden" name="action" value="update_theme">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <!-- Left: Visual Stats -->
+                        <div class="space-y-8">
+                            <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-[2px] flex items-center">
+                                <span class="w-8 h-px bg-gray-200 mr-3"></span> Visual Identity
+                            </h4>
+
+                            <div class="space-y-6">
+                                <div class="space-y-3">
+                                    <label class="text-xs font-bold text-gray-700 uppercase tracking-tight">Primary
+                                        Brand Color</label>
+                                    <div
+                                        class="flex items-center gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                                        <input type="color" name="primary_color" value="{{ theme.primary_color }}"
+                                            class="w-12 h-12 rounded-xl border-0 cursor-pointer p-0 bg-transparent">
+                                        <div class="flex-1">
+                                            <p class="text-xs font-black font-mono text-gray-800 uppercase">{{
+                                                theme.primary_color }}</p>
+                                            <p class="text-[10px] text-gray-400 font-bold uppercase">Accent highlights
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-3">
+                                    <label class="text-xs font-bold text-gray-700 uppercase tracking-tight">System Logo
+                                        URL</label>
+                                    <div class="relative">
+                                        <i
+                                            class="ri-image-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                        <input type="text" name="logo_url" value="{{ theme.logo_url }}"
+                                            class="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-{{ site_settings.primary_color|default('teal') }}-500 transition-all">
+                                    </div>
+                                    <p class="text-[9px] text-gray-400 font-bold uppercase px-1 tracking-tighter">
+                                        Recommended: Square SVG or transparent PNG</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Brand Config -->
+                        <div class="space-y-8">
+                            <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-[2px] flex items-center">
+                                <span class="w-8 h-px bg-gray-200 mr-3"></span> Brand Configuration
+                            </h4>
+
+                            <div class="space-y-6">
+                                <div class="space-y-3">
+                                    <label class="text-xs font-bold text-gray-700 uppercase tracking-tight">Portal
+                                        Name</label>
+                                    <div class="relative">
+                                        <i
+                                            class="ri-terminal-window-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                        <input type="text" name="site_name" value="{{ theme.site_name }}"
+                                            class="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-{{ site_settings.primary_color|default('teal') }}-500 transition-all">
+                                    </div>
+                                </div>
+
+                                <div class="space-y-3">
+                                    <label class="text-xs font-bold text-gray-700 uppercase tracking-tight">Global
+                                        Typography</label>
+                                    <div class="relative">
+                                        <i class="ri-text absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                        <select name="font_family"
+                                            class="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-{{ site_settings.primary_color|default('teal') }}-500 transition-all appearance-none cursor-pointer">
+                                            <option value="Outfit, sans-serif" {% if
+                                                theme.font_family=='Outfit, sans-serif' %}selected{% endif %}>Outfit
+                                                (Premium)</option>
+                                            <option value="Inter, sans-serif" {% if
+                                                theme.font_family=='Inter, sans-serif' %}selected{% endif %}>Inter
+                                                (Scientific)</option>
+                                            <option value="Roboto, sans-serif" {% if
+                                                theme.font_family=='Roboto, sans-serif' %}selected{% endif %}>Roboto
+                                                (Standard)</option>
+                                        </select>
+                                        <i
+                                            class="ri-arrow-down-s-line absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="pt-10 border-t border-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div class="flex items-center gap-4 group">
+                            <div
+                                class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center border border-gray-100 group-hover:bg-{{ site_settings.primary_color|default('teal') }}-50 transition-colors">
+                                <i
+                                    class="ri-flashlight-line text-{{ site_settings.primary_color|default('teal') }}-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-black text-gray-800 uppercase tracking-tight">Real-time
+                                    Application</p>
+                                <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Branding applies
+                                    across all user dashboards</p>
+                            </div>
+                        </div>
+                        <button type="submit"
+                            class="px-12 py-4 bg-gray-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-gray-200 flex items-center">
+                            <i class="ri-refresh-line mr-2"></i> Update Site Identity
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Global Setup -->
+            <div id="content-setup" class="hidden">
+                <form action="/admin/cms" method="POST" class="space-y-8">
+                    <input type="hidden" name="action" value="update_setup">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-4">
+                            <label class="text-xs font-bold text-gray-700 uppercase tracking-tight">Contact
+                                Email</label>
+                            <div class="relative">
+                                <i class="ri-mail-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="email" name="contact_email" value="{{ theme.contact_email }}"
+                                    class="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-teal-500 transition-all">
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <label class="text-xs font-bold text-gray-700 uppercase tracking-tight">Contact
+                                Phone</label>
+                            <div class="relative">
+                                <i class="ri-phone-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" name="contact_phone" value="{{ theme.contact_phone }}"
+                                    class="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-teal-500 transition-all">
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 md:col-span-2">
+                            <label class="text-xs font-bold text-gray-700 uppercase tracking-tight">Contact
+                                Address</label>
+                            <div class="relative">
+                                <i class="ri-map-pin-line absolute left-4 top-6 text-gray-400"></i>
+                                <textarea name="contact_address" rows="3"
+                                    class="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-teal-500 transition-all">{{ theme.contact_address }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <label class="text-xs font-bold text-gray-700 uppercase tracking-tight">Facebook URL</label>
+                            <input type="url" name="facebook_url" value="{{ theme.facebook_url }}"
+                                class="w-full px-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-teal-500 transition-all">
+                        </div>
+
+                        <div class="space-y-4">
+                            <label class="text-xs font-bold text-gray-700 uppercase tracking-tight">Twitter URL</label>
+                            <input type="url" name="twitter_url" value="{{ theme.twitter_url }}"
+                                class="w-full px-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-teal-500 transition-all">
+                        </div>
+
+                        <div class="space-y-4 md:col-span-2">
+                            <label class="text-xs font-bold text-gray-700 uppercase tracking-tight">Instagram
+                                URL</label>
+                            <input type="url" name="instagram_url" value="{{ theme.instagram_url }}"
+                                class="w-full px-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-teal-500 transition-all">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-6">
+                        <button type="submit"
+                            class="px-12 py-4 bg-teal-600 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-teal-700 transition-all shadow-xl flex items-center">
+                            <i class="ri-save-line mr-2"></i> Save Global Setup
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Consultation Fees -->
+            <div id="content-fees" class="hidden">
+                <form action="/admin/cms" method="POST" class="space-y-8">
+                    <input type="hidden" name="action" value="update_fees">
+
+                    <div class="bg-blue-50 border border-blue-100 rounded-2xl p-6 mb-8">
+                        <div class="flex items-start gap-4">
+                            <i class="ri-information-line text-blue-600 text-2xl"></i>
+                            <div>
+                                <h4 class="font-black text-blue-900 text-sm mb-1">Consultation Fee Logic</h4>
+                                <p class="text-xs text-blue-700 font-bold">If a patient visits within the specified
+                                    number of days from their last appointment, the consultation fee will be waived
+                                    (₹0). Otherwise, the standard fee applies.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-4">
+                            <label class="text-xs font-bold text-gray-700 uppercase tracking-tight">Default Consultation
+                                Fee (₹)</label>
+                            <div class="relative">
+                                <i
+                                    class="ri-money-rupee-circle-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl"></i>
+                                <input type="number" name="consultation_fee" value="{{ fees.consultation_fee }}" min="0"
+                                    step="50"
+                                    class="w-full pl-12 pr-4 py-5 bg-gray-50 border border-gray-100 rounded-2xl text-lg font-black text-gray-800 outline-none focus:ring-2 focus:ring-teal-500 transition-all">
+                            </div>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase px-1">This fee applies to all new
+                                appointments</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <label class="text-xs font-bold text-gray-700 uppercase tracking-tight">Free Consultation
+                                Period (Days)</label>
+                            <div class="relative">
+                                <i
+                                    class="ri-calendar-check-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl"></i>
+                                <input type="number" name="free_consultation_days"
+                                    value="{{ fees.free_consultation_days }}" min="1" max="30"
+                                    class="w-full pl-12 pr-4 py-5 bg-gray-50 border border-gray-100 rounded-2xl text-lg font-black text-gray-800 outline-none focus:ring-2 focus:ring-teal-500 transition-all">
+                            </div>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase px-1">Waive fee if patient returns
+                                within this period</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-100 rounded-2xl p-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                                    <i class="ri-check-double-line text-teal-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-black text-teal-900 uppercase tracking-tight">Current
+                                        Settings</p>
+                                    <p class="text-[10px] text-teal-700 font-bold">Fee: ₹{{ fees.consultation_fee }} |
+                                        Free within {{ fees.free_consultation_days }} days</p>
+                                </div>
+                            </div>
+                            <button type="submit"
+                                class="px-10 py-4 bg-teal-600 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-teal-700 transition-all shadow-xl flex items-center">
+                                <i class="ri-save-line mr-2"></i> Update Fees
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tab) {
+        const homepageTab = document.getElementById('tab-homepage');
+        const themeTab = document.getElementById('tab-theme');
+        const setupTab = document.getElementById('tab-setup');
+        const feesTab = document.getElementById('tab-fees');
+
+        const homepageContent = document.getElementById('content-homepage');
+        const themeContent = document.getElementById('content-theme');
+        const setupContent = document.getElementById('content-setup');
+        const feesContent = document.getElementById('content-fees');
+
+        const primaryColor = "{{ site_settings.primary_color|default('teal') }}";
+
+        // Reset all
+        [homepageTab, themeTab, setupTab, feesTab].forEach(t => {
+            t.classList.remove(`border-${primaryColor}-600`, `text-${primaryColor}-600`);
+            t.classList.add('border-transparent', 'text-gray-400');
+        });
+        [homepageContent, themeContent, setupContent, feesContent].forEach(c => c.classList.add('hidden'));
+
+        if (tab === 'homepage') {
+            homepageTab.classList.add(`border-${primaryColor}-600`, `text-${primaryColor}-600`);
+            homepageTab.classList.remove('border-transparent', 'text-gray-400');
+            homepageContent.classList.remove('hidden');
+        } else if (tab === 'theme') {
+            themeTab.classList.add(`border-${primaryColor}-600`, `text-${primaryColor}-600`);
+            themeTab.classList.remove('border-transparent', 'text-gray-400');
+            themeContent.classList.remove('hidden');
+        } else if (tab === 'setup') {
+            setupTab.classList.add(`border-${primaryColor}-600`, `text-${primaryColor}-600`);
+            setupTab.classList.remove('border-transparent', 'text-gray-400');
+            setupContent.classList.remove('hidden');
+        } else if (tab === 'fees') {
+            feesTab.classList.add(`border-${primaryColor}-600`, `text-${primaryColor}-600`);
+            feesTab.classList.remove('border-transparent', 'text-gray-400');
+            feesContent.classList.remove('hidden');
+        }
+    }
+</script>
+{% endblock %}

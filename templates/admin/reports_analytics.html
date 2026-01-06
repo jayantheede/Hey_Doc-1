@@ -1,0 +1,206 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Reports & Analytics - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">Reports & Analytics</h1>
+            <p class="text-gray-500 text-sm">System-wide performance insights and data</p>
+        </div>
+        <div class="flex space-x-3">
+            <button
+                class="flex items-center space-x-2 px-4 py-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition-all border border-gray-100">
+                <i class="ri-calendar-line"></i>
+                <span class="text-sm font-semibold">Last 30 Days</span>
+            </button>
+            <button onclick="window.print()"
+                class="flex items-center space-x-2 px-4 py-2 bg-slate-900 text-white rounded-xl hover:bg-black transition-all shadow-lg shadow-gray-200">
+                <i class="ri-printer-line"></i>
+                <span class="text-sm font-semibold">Print Report</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Metrics Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4">
+                <i class="ri-user-heart-line text-2xl"></i>
+            </div>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Patients</p>
+            <h3 class="text-4xl font-black text-gray-800">{{ metrics.total_patients|default('0') }}</h3>
+            <p
+                class="text-[10px] text-blue-600 font-bold mt-2 uppercase tracking-tighter cursor-pointer hover:underline">
+                View Demographics</p>
+        </div>
+
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-4">
+                <i class="ri-calendar-check-line text-2xl"></i>
+            </div>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Bookings</p>
+            <h3 class="text-4xl font-black text-gray-800">{{ metrics.total_appointments|default('0') }}</h3>
+            <p
+                class="text-[10px] text-purple-600 font-bold mt-2 uppercase tracking-tighter cursor-pointer hover:underline">
+                84% Completion Rate</p>
+        </div>
+
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-4">
+                <i class="ri-money-rupee-circle-line text-2xl"></i>
+            </div>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Revenue</p>
+            <h3 class="text-4xl font-black text-gray-800">₹{{ metrics.total_revenue|default('0') }}</h3>
+            <p
+                class="text-[10px] text-emerald-600 font-bold mt-2 uppercase tracking-tighter cursor-pointer hover:underline">
+                Current Cycle</p>
+        </div>
+
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-4">
+                <i class="ri-community-line text-2xl"></i>
+            </div>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Branches</p>
+            <h3 class="text-4xl font-black text-gray-800">{{ metrics.total_branches|default('0') }}</h3>
+            <p
+                class="text-[10px] text-orange-600 font-bold mt-2 uppercase tracking-tighter cursor-pointer hover:underline">
+                100% Operational</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Recent Appointments Table -->
+        <div class="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+                <h2 class="text-lg font-bold text-gray-800">Recent System Activity</h2>
+                <a href="#"
+                    class="text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-{{ site_settings.primary_color|default('teal') }}-600 transition-all">View
+                    All</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-gray-50/50">
+                            <th
+                                class="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                                Patient</th>
+                            <th
+                                class="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                                Date & Time</th>
+                            <th
+                                class="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 text-center">
+                                Status</th>
+                            <th
+                                class="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 text-right">
+                                Fee</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        {% for appt in recent_appointments|default([]) %}
+                        <tr class="hover:bg-gray-50/80 transition-all group">
+                            <td class="px-8 py-5">
+                                <p
+                                    class="font-bold text-gray-800 group-hover:text-{{ site_settings.primary_color|default('teal') }}-600 transition-colors">
+                                    {{ appt.patient_name }}</p>
+                            </td>
+                            <td class="px-8 py-5 text-sm font-medium text-gray-500">
+                                {{ appt.appointment_date.strftime('%d %b %Y') if appt.appointment_date else 'N/A' }} |
+                                {{ appt.time_slot }}
+                            </td>
+                            <td class="px-8 py-5 text-center">
+                                <span
+                                    class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest 
+                                    {% if appt.status == 'completed' %}bg-emerald-50 text-emerald-600{% elif appt.status == 'pending' %}bg-amber-50 text-amber-600{% else %}bg-gray-100 text-gray-500{% endif %}">
+                                    {{ appt.status }}
+                                </span>
+                            </td>
+                            <td class="px-8 py-5 text-right font-bold text-gray-800">
+                                ₹500
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if not recent_appointments %}
+                        <tr>
+                            <td colspan="4" class="px-8 py-10 text-center text-gray-400 italic">No recent appointments
+                                to show.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Performance Insights -->
+        <div class="space-y-6">
+            <div
+                class="bg-gray-900 rounded-3xl p-8 text-white relative overflow-hidden group min-h-[300px] flex flex-col justify-center">
+                <div
+                    class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all">
+                </div>
+                <h4 class="text-sm font-black uppercase tracking-[2px] mb-8 flex items-center gap-3">
+                    <span class="w-8 h-px bg-white/20"></span> Performance
+                </h4>
+                <div class="space-y-8">
+                    <div>
+                        <div class="flex justify-between text-[10px] font-black mb-3 uppercase tracking-widest">
+                            <span class="text-white/60">Utilization</span>
+                            <span class="text-orange-400">92%</span>
+                        </div>
+                        <div class="w-full bg-white/10 h-1 rounded-full overflow-hidden">
+                            <div class="bg-orange-500 h-full rounded-full" style="width: 92%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-[10px] font-black mb-3 uppercase tracking-widest">
+                            <span class="text-white/60">Patient Returns</span>
+                            <span class="text-emerald-400">76%</span>
+                        </div>
+                        <div class="w-full bg-white/10 h-1 rounded-full overflow-hidden">
+                            <div class="bg-emerald-500 h-full rounded-full" style="width: 76%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-[10px] font-black mb-3 uppercase tracking-widest">
+                            <span class="text-white/60">Clinic Growth</span>
+                            <span class="text-blue-400">12%</span>
+                        </div>
+                        <div class="w-full bg-white/10 h-1 rounded-full overflow-hidden">
+                            <div class="bg-blue-500 h-full rounded-full" style="width: 12%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Branch Analytics -->
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col">
+                <h4 class="text-sm font-black uppercase tracking-[2px] mb-6 flex items-center gap-3 text-gray-800">
+                    <span class="w-8 h-px bg-gray-200"></span> Branch Performance
+                </h4>
+                <div class="space-y-4">
+                    {% for branch in branch_stats %}
+                    <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <div class="flex justify-between items-center mb-2">
+                            <p class="text-xs font-black text-gray-800">{{ branch.name }}</p>
+                            <span
+                                class="text-[10px] font-black text-{{ site_settings.primary_color|default('teal') }}-600 uppercase">₹{{
+                                branch.revenue }}</span>
+                        </div>
+                        <div class="flex justify-between text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                            <span>{{ branch.appointments }} Bookings</span>
+                            <span>{{ branch.patients }} Patients</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button
+                    class="mt-6 w-full py-3 bg-gray-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-sm">
+                    Detailed Branch Audit
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

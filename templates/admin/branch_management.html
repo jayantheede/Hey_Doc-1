@@ -1,0 +1,198 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Branch Management - {{ site_settings.site_name }}{% endblock %}
+
+{% block header_title %}Branch Management{% endblock %}
+{% block header_subtitle %}Monitor and configure hospital locations and administrators{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-8">
+    <div>
+        <h2 class="text-xl font-black text-slate-800 tracking-tight">Active Branches</h2>
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Location Distribution</p>
+    </div>
+    <div class="flex gap-4">
+        <button onclick="openModal('branchModal')"
+            class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-2xl font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-brand-900/10">
+            <i class="ri-add-line text-lg"></i> Add New Branch
+        </button>
+        <a href="/admin/create-branch-admin"
+            class="bg-slate-800 hover:bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold text-sm transition-all flex items-center gap-2 shadow-lg">
+            <i class="ri-user-add-line text-lg"></i> Create Admin
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+    {% for branch in branches %}
+    <div
+        class="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-brand-500/5 transition-all group relative overflow-hidden">
+        <div class="flex justify-between items-start mb-8">
+            <div
+                class="w-14 h-14 bg-brand-50 rounded-2xl flex items-center justify-center text-brand-600 group-hover:bg-brand-600 group-hover:text-white transition-all transform group-hover:rotate-6">
+                <i class="ri-hospital-line text-3xl"></i>
+            </div>
+            <div
+                class="flex gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
+                <button onclick="editBranch('{{ branch._id }}', '{{ branch.name }}', '{{ branch.location }}')"
+                    class="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 hover:bg-brand-50 hover:text-brand-600 flex items-center justify-center transition-all">
+                    <i class="ri-pencil-line"></i>
+                </button>
+                <button onclick="deleteBranch('{{ branch._id }}')"
+                    class="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 hover:bg-rose-50 hover:text-rose-600 flex items-center justify-center transition-all">
+                    <i class="ri-delete-bin-line"></i>
+                </button>
+            </div>
+        </div>
+
+        <h4 class="text-2xl font-black text-slate-800 mb-2">{{ branch.name }}</h4>
+        <div class="flex items-center gap-2 text-slate-400 font-bold text-sm mb-8">
+            <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px]">
+                <i class="ri-map-pin-2-line"></i>
+            </div>
+            {{ branch.location }}
+        </div>
+
+        <div class="pt-6 border-t border-slate-50 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Operational</span>
+            </div>
+            <div class="flex -space-x-3">
+                <div
+                    class="w-10 h-10 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 uppercase">
+                    BA
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-span-full py-24 bg-white rounded-[40px] border-2 border-dashed border-slate-200 text-center">
+        <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-200">
+            <i class="ri-building-line text-5xl"></i>
+        </div>
+        <p class="text-slate-400 font-black text-xl">No branches discovered yet</p>
+        <p class="text-slate-300 font-bold mt-1">Start by adding your first hospital location</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Branch Administrators -->
+<div class="bg-white rounded-[40px] border border-slate-100 shadow-sm overflow-hidden">
+    <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center">
+                <i class="ri-user-star-line text-lg"></i>
+            </div>
+            <h2 class="text-lg font-bold text-slate-800">Branch Administrators</h2>
+        </div>
+        <a href="/admin/manage-admins"
+            class="text-brand-600 font-bold text-xs uppercase tracking-widest hover:underline px-4 py-2 bg-brand-50 rounded-xl">Manage
+            All &rarr;</a>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="bg-slate-50/50 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <tr>
+                    <th class="px-8 py-5">Administrator</th>
+                    <th class="px-8 py-5">Assigned Branch</th>
+                    <th class="px-8 py-5 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50">
+                {% for admin in branch_admins %}
+                <tr class="hover:bg-slate-50/30 transition-colors group">
+                    <td class="px-8 py-6">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 bg-indigo-50 rounded-[18px] flex items-center justify-center text-indigo-600 font-black text-lg">
+                                {{ admin.name[0] if admin.name else 'A' }}
+                            </div>
+                            <div>
+                                <p class="font-black text-slate-900 leading-none">{{ admin.name }}</p>
+                                <p class="text-xs font-bold text-slate-400 mt-1">{{ admin.email }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-8 py-6">
+                        <span
+                            class="inline-flex items-center gap-2 px-3 py-1 bg-brand-50 text-brand-700 rounded-lg text-[10px] font-black uppercase tracking-widest border border-brand-100/50">
+                            <i class="ri-building-line text-xs"></i> {{ admin.branch_name }}
+                        </span>
+                    </td>
+                    <td class="px-8 py-6 text-right">
+                        <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <a href="/admin/create-branch-admin?edit={{ admin._id }}"
+                                class="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 hover:bg-brand-50 hover:text-brand-600 flex items-center justify-center transition-all">
+                                <i class="ri-pencil-line"></i>
+                            </a>
+                            <form action="/admin/delete-branch-admin/{{ admin._id }}" method="POST" class="inline"
+                                onsubmit="return confirm('Delete this admin?')">
+                                <button type="submit"
+                                    class="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 hover:bg-rose-50 hover:text-rose-600 flex items-center justify-center transition-all">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="branchModal" class="hidden fixed inset-0 z-[100]">
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeModal('branchModal')"></div>
+    <div
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-[40px] shadow-2xl p-10">
+        <h3 id="modalTitle" class="text-2xl font-black text-slate-900 mb-2">Add New Branch</h3>
+        <p class="text-slate-400 text-sm font-bold mb-8">Establish a new hospital location</p>
+
+        <form action="/admin/add_branch" method="POST" class="space-y-6">
+            <input type="hidden" name="branch_id" id="modalBranchId">
+            <div class="space-y-1">
+                <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Branch Name</label>
+                <input type="text" name="name" id="modalBranchName" required placeholder="e.g. City Life Medical"
+                    class="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 font-bold text-slate-800 outline-none focus:border-brand-500 transition-all">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-4">Location</label>
+                <input type="text" name="location" id="modalBranchLocation" required placeholder="e.g. New York, NY"
+                    class="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 font-bold text-slate-800 outline-none focus:border-brand-500 transition-all">
+            </div>
+
+            <div class="pt-4 flex gap-4">
+                <button type="button" onclick="closeModal('branchModal')"
+                    class="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black uppercase tracking-widest text-xs">Cancel</button>
+                <button type="submit"
+                    class="flex-1 py-4 bg-brand-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-brand-900/10 hover:bg-brand-700 transition-all">Save
+                    Branch</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    function editBranch(id, name, location) {
+        document.getElementById('modalTitle').innerText = 'Edit Branch';
+        document.getElementById('modalBranchId').value = id;
+        document.getElementById('modalBranchName').value = name;
+        document.getElementById('modalBranchLocation').value = location;
+        openModal('branchModal');
+    }
+
+    function deleteBranch(id) {
+        if (confirm('Are you sure you want to delete this branch? All associated staff will be unassigned.')) {
+            window.location.href = `/admin/delete_branch/${id}`;
+        }
+    }
+</script>
+{% endblock %}

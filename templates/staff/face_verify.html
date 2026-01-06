@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face ID Verification | Hey Doc!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap');
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 100%);
+            min-height: screen;
+            overflow: hidden;
+        }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 48px;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.05);
+        }
+
+        .video-viewport {
+            background: #000;
+            border-radius: 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
+        }
+
+        .scan-line {
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #0d9488, transparent);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            filter: blur(1px);
+            animation: scan-loop 3s ease-in-out infinite;
+        }
+
+        @keyframes scan-loop {
+            0% {
+                top: 0%;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        .corner-bracket {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-color: rgba(13, 148, 136, 0.4);
+            border-style: solid;
+        }
+
+        .corner-tl {
+            top: 20px;
+            left: 20px;
+            border-width: 2px 0 0 2px;
+            border-radius: 12px 0 0 0;
+        }
+
+        .corner-tr {
+            top: 20px;
+            right: 20px;
+            border-width: 2px 2px 0 0;
+            border-radius: 0 12px 0 0;
+        }
+
+        .corner-bl {
+            bottom: 20px;
+            left: 20px;
+            border-width: 0 0 2px 2px;
+            border-radius: 0 0 0 12px;
+        }
+
+        .corner-br {
+            bottom: 20px;
+            right: 20px;
+            border-width: 0 2px 2px 0;
+            border-radius: 0 0 12px 0;
+        }
+
+        .progress-bar-inner {
+            background: linear-gradient(90deg, #0d9488, #0ea5e9);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #0d9488;
+            box-shadow: 0 0 10px #0d9488;
+        }
+    </style>
+</head>
+
+<body class="flex items-center justify-center min-h-screen p-6">
+    <!-- Ambient Blurs -->
+    <div class="fixed top-[-10%] left-[-5%] w-[40%] h-[40%] bg-teal-200/30 blur-[120px] rounded-full"></div>
+    <div class="fixed bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-blue-200/30 blur-[120px] rounded-full"></div>
+
+    <div class="max-w-md w-full relative z-10">
+        <div class="glass-container p-12 text-center">
+            <!-- HUD Header -->
+            <div
+                class="inline-flex items-center gap-3 px-4 py-2 bg-teal-500/10 border border-teal-500/20 rounded-full mb-8">
+                <span class="status-dot animate-pulse"></span>
+                <span class="text-[10px] font-black uppercase tracking-[3px] text-teal-700">Face ID Node active</span>
+            </div>
+
+            <h1 class="text-3xl font-black text-slate-800 tracking-tight mb-3">Identity Check</h1>
+            <p class="text-slate-500 font-medium text-sm leading-relaxed mb-10 max-w-[280px] mx-auto">
+                Securely verifying your face profile for workstation access.
+            </p>
+
+            <!-- Viewport -->
+            <div class="relative mb-8">
+                <div class="aspect-square w-full max-w-[300px] mx-auto video-viewport border-4 border-white shadow-2xl">
+                    <video id="video" autoplay playsinline
+                        class="w-full h-full object-cover transform scale-x-[-1] opacity-90"></video>
+
+                    <!-- HUD Overlays -->
+                    <div class="scan-line" id="scanner"></div>
+                    <div class="corner-bracket corner-tl"></div>
+                    <div class="corner-bracket corner-tr"></div>
+                    <div class="corner-bracket corner-bl"></div>
+                    <div class="corner-bracket corner-br"></div>
+
+                    <!-- Loading Overlay (from reference) -->
+                    <div id="loading-overlay"
+                        class="hidden absolute inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center rounded-2xl">
+                        <div class="flex flex-col items-center gap-4">
+                            <div
+                                class="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin">
+                            </div>
+                            <span class="text-white text-sm font-bold">Verifying Face ID...</span>
+                        </div>
+                    </div>
+
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div class="w-56 h-56 border border-teal-500/10 rounded-full border-dashed animate-spin-slow">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Feedback -->
+                <div
+                    class="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-white/80 backdrop-blur-xl border border-white px-8 py-3 rounded-2xl shadow-xl min-w-[220px]">
+                    <div class="flex items-center justify-center gap-3">
+                        <i class="ri-user-search-line text-teal-600"></i>
+                        <span id="status" class="text-[10px] font-black uppercase tracking-[3px] text-teal-800">Ready
+                            for Scan</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis HUD -->
+            <div id="progress-container" class="hidden max-w-[280px] mx-auto space-y-3 mb-10">
+                <div class="flex justify-between text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">
+                    <span>Face Pattern Analysis</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+                <div class="h-1.5 w-full bg-teal-500/10 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="h-full progress-bar-inner" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div>
+                <a href="/login"
+                    class="text-[10px] font-black uppercase tracking-[3px] text-slate-400 hover:text-teal-600 transition-colors">
+                    <i class="ri-arrow-left-line mr-2"></i> Manual Login
+                </a>
+            </div>
+
+            <!-- Success Auth Overlay -->
+            <div id="success-state"
+                class="hidden absolute inset-0 bg-white/95 backdrop-blur-2xl flex flex-col items-center justify-center text-center p-12 z-50 rounded-[48px] animate-in fade-in duration-500">
+                <div
+                    class="w-20 h-20 rounded-[28px] bg-teal-500 text-white flex items-center justify-center shadow-2xl shadow-teal-500/40 mb-8">
+                    <i class="ri-checkbox-circle-fill text-4xl"></i>
+                </div>
+                <h2 class="text-3xl font-black text-slate-800 mb-3">Face Authorized</h2>
+                <p class="text-slate-500 text-sm font-medium">Access granted. Opening your dashboard workspace.</p>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="canvas" class="hidden"></canvas>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const status = document.getElementById('status');
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercent = document.getElementById('progress-percent');
+        const progressContainer = document.getElementById('progress-container');
+        const successState = document.getElementById('success-state');
+        const loadingOverlay = document.getElementById('loading-overlay');
+
+        let isScanning = false;
+        let scanProgress = 0;
+
+        async function initCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } }
+                });
+                video.srcObject = stream;
+                status.innerText = "Synchronizing...";
+                startVerificationLoop();
+            } catch (err) {
+                status.innerText = "Access Blocked";
+                status.style.color = "#ef4444";
+            }
+        }
+
+        async function attemptVerification() {
+            if (isScanning) return;
+            if (video.videoWidth === 0 || video.videoHeight === 0) return;
+
+            isScanning = true;
+            status.innerText = "Analyzing Face...";
+            progressContainer.classList.remove('hidden');
+            loadingOverlay.classList.remove('hidden'); // Show loading overlay
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const image = canvas.toDataURL('image/jpeg', 0.6);
+
+            try {
+                const response = await fetch('/staff/face_verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    scanProgress = 100;
+                    updateUI();
+                    successState.classList.remove('hidden');
+                    setTimeout(() => {
+                        window.location.href = data.redirect;
+                    }, 1500);
+                } else {
+                    loadingOverlay.classList.add('hidden');
+                    status.innerText = data.message || "Match Failed";
+                    scanProgress = Math.max(0, scanProgress - 10);
+                    updateUI();
+                    setTimeout(() => { isScanning = false; }, 2500);
+                }
+            } catch (err) {
+                loadingOverlay.classList.add('hidden');
+                console.error("Verification error:", err);
+                isScanning = false;
+            }
+        }
+
+        function updateUI() {
+            progressBar.style.width = scanProgress + '%';
+            progressPercent.innerText = scanProgress + '%';
+        }
+
+        function startVerificationLoop() {
+            setInterval(() => {
+                if (!isScanning) attemptVerification();
+                else {
+                    if (scanProgress < 95) scanProgress += 5;
+                    updateUI();
+                }
+            }, 3000);
+        }
+
+        window.onload = initCamera;
+    </script>
+</body>
+
+</html>
